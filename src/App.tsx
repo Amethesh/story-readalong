@@ -25,6 +25,7 @@ function App() {
   };
 
   useEffect(() => {
+    console.log("INSIDE ACTIVEITEM")
     let words = poems[activeItem].poem
       .trim()
       .split(" ")
@@ -42,8 +43,10 @@ function App() {
   useEffect(() => {
     console.log(transcripts);
     let transcript = transcripts.split(" ");
+    let reachedEnd = true;
     for (let i = 0; i < actualSentence.length; i++) {
-      if (transcript.length === i) {
+      if (transcript.length === i && i !== 0) {
+        reachedEnd = false;
         break;
       }
       if (
@@ -60,6 +63,9 @@ function App() {
         tempword[i] = { ...tempword[i], color: "red" };
         setActualSentence(tempword);
       }
+    }
+    if (reachedEnd && transcript.length === actualSentence.length) {
+      nextItem();
     }
     console.log(actualSentence)
   }, [transcripts]);
@@ -120,7 +126,9 @@ function App() {
           />
         </button>
       </div>
+      {transcripts && 
       <p className="w-[1000px] text-nowrap px-4 overflow-hidden mx-auto text-xl mt-6 p-2 bg-[#e9f3f4] rounded-full font-medium text-center text-[#007c84]">{transcripts}</p>
+      }
     </>
   );
 }

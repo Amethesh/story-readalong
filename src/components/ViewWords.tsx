@@ -1,6 +1,3 @@
-import { useState } from "react";
-import poems from "../assets/poems.json";
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 interface ViewWordsProps {
   actualSentence: { word: string; color: string; }[];
   image: string;
