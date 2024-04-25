@@ -15,8 +15,8 @@ const ViewWords = (props: ViewWordsProps) => {
       />
       <div className="text-[40px] m-8">
 
-        {props.actualSentence.map((data) => (
-          <span className={`text-${data.color}-500 font-semibold`}>
+        {props.actualSentence.map((data, index) => (
+          <span key={index} className={`text-${data.color}-500 font-semibold`}>
             {data.word + " "}
           </span>
         ))}

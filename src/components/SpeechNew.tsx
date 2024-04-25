@@ -1,19 +1,31 @@
 import { MicIcon, MicOffIcon, RefreshCcw } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { ForwardedRef, forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
 
 interface SpeechProps {
-  setTranscript: React.Dispatch<React.SetStateAction<string>>;
+  setTranscript: React.Dispatch<React.SetStateAction<string[]>>;
   resetStory: () => void;
+  activeItem: number;
 }
-const Speech = (props: SpeechProps) => {
+const Speech = forwardRef((props: SpeechProps, ref: ForwardedRef<unknown>) => {
   const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } =
     useSpeechRecognition();
+
+    useImperativeHandle(ref, ()=>{
+      return {
+        resetTranscript: resetTranscript,
+      }
+    })
 
   const [play, setPlay] = useState(true);
 
   useEffect(() => {
-    props.setTranscript(transcript);
+    props.setTranscript((prevTranscript) => {
+      const newTranscript = [...prevTranscript];
+      newTranscript[props.activeItem] = transcript;
+      return newTranscript;
+    });
+    
   }, [transcript]);
 
   if (!browserSupportsSpeechRecognition) {
@@ -29,7 +41,7 @@ const Speech = (props: SpeechProps) => {
     setPlay(true);
   };
 
-  const resetListening = () => {
+ const resetListening = () => {
     resetTranscript();
     props.resetStory();
   };
@@ -44,6 +56,6 @@ const Speech = (props: SpeechProps) => {
       )}
     </div>
   );
-};
+})
 
 export default Speech;
