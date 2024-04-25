@@ -38,9 +38,9 @@ const Speech = (props: SpeechProps) => {
     <div className="flex gap-4 justify-end w-full pr-16">
       <RefreshCcw className="w-12 h-12 bg-[#e9f3f4] p-2 rounded-full text-[#007c84] shadow-md cursor-pointer" onClick={resetListening} />
       {play ? (
-        <MicIcon className="w-12 h-12 text-[#e9f3f4] p-2 rounded-full bg-[#007c84] shadow-md cursor-pointer" onClick={keepListeneing} />
+        <MicOffIcon className="w-12 h-12 text-[#e9f3f4] p-2 rounded-full bg-[#007c84] shadow-md cursor-pointer" onClick={keepListeneing} />
       ) : (
-        <MicOffIcon className="w-12 h-12 text-[#e9f3f4] p-2 rounded-full bg-[#007c84] cursor-pointer" onClick={pauseListening} />
+        <MicIcon className="w-12 h-12 text-[#e9f3f4] p-2 rounded-full bg-[#007c84] cursor-pointer" onClick={pauseListening} />
       )}
     </div>
   );

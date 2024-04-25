@@ -30,7 +30,7 @@ const ImageSlide = () => {
           >
             <img
               src={poem.image}
-              className="rounded-lg object-cover w-[500px] h-[500px] shadow-lg border"
+              className="rounded-lg object-cover w-[500px] h-[500px] shadow-2xl border"
               alt=""
             />
             <p className="text-[40px] m-8">{poem.poem}</p>

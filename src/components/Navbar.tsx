@@ -1,5 +1,4 @@
 import { ArrowLeft } from 'lucide-react'
-import Speech from './SpeechNew'
 
 const Navbar = () => {
   return (
