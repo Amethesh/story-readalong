@@ -43,7 +43,7 @@ const ImageSlide = () => {
       <div className="absolute z-30 flex  -translate-x-1/2 space-x-3 rtl:space-x-reverse left-1/2">
         {poems.map((poem, index) => (
           <button
-            key={index}
+            key={poem.poem.length}
             type="button"
             className={`w-3 h-3 rounded-full ${
               activeItem === index ? "bg-[#289197]" : "bg-[#e9f3f4]"

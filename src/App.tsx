@@ -8,7 +8,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 function App() {
   const [activeItem, setActiveItem] = useState(0);
   const [transcripts, setTranscript] = useState<string[]>([]);
-  const [actualSentences, setActualSentences] = useState<{ word: string; color: string; }[][]>([]);
+  const [actualSentences, setActualSentences] = useState<{ word: string; color: string }[][]>([]);
 
   const nextItem = () => {
     setActiveItem((prevItem) => (prevItem === poems.length - 1 ? 0 : prevItem + 1));
@@ -24,19 +24,19 @@ function App() {
   };
   const goToItem = (index: number) => {
     setActiveItem(index);
-    resetStory()
+    resetStory();
   };
 
   useEffect(() => {
-    console.log("INSIDE ACTIVEITEM")
-    let sentences = poems.map((poem) =>
+    console.log("INSIDE ACTIVEITEM");
+    const sentences = poems.map((poem) =>
       poem.poem
         .trim()
         .split(" ")
         .map((data) => {
           return {
             word: data,
-            color: "black",
+            color: "black"
           };
         })
     );
@@ -45,12 +45,12 @@ function App() {
     // setTranscript("");
   }, []);
 
-  const childRef = useRef()
+  const childRef = useRef();
 
   useEffect(() => {
     if (transcripts && transcripts[activeItem]) {
       console.log(transcripts);
-      let transcript = transcripts[activeItem].split(" ");
+      const transcript = transcripts[activeItem].split(" ");
       let reachedEnd = true;
       for (let i = 0; i < actualSentences[activeItem].length; i++) {
         if (transcript.length === i && i !== 0) {
@@ -61,19 +61,20 @@ function App() {
           actualSentences[activeItem][i].word.replace(/[^a-zA-Z0-9]/g, "").toLowerCase() ===
           transcript[i].toLowerCase()
         ) {
-          let tempSentences = [...actualSentences];
-          console.log("IF :", tempSentences)
+          const tempSentences = [...actualSentences];
+          console.log("IF :", tempSentences);
           tempSentences[activeItem][i] = { ...tempSentences[activeItem][i], color: "blue" };
           setActualSentences(tempSentences);
         } else {
-          let tempSentences = [...actualSentences];
-          console.log("ELSE :", tempSentences)
+          const tempSentences = [...actualSentences];
+          console.log("ELSE :", tempSentences);
           tempSentences[activeItem][i] = { ...tempSentences[activeItem][i], color: "red" };
           setActualSentences(tempSentences);
         }
       }
       if (reachedEnd && transcript.length === actualSentences[activeItem].length) {
         nextItem();
+        // @ts-ignore
         childRef.current?.resetTranscript();
       }
       console.log(actualSentences);
@@ -81,18 +82,18 @@ function App() {
   }, [transcripts]);
 
   const resetStory = () => {
-    let sentences = [...actualSentences];
+    const sentences = [...actualSentences];
     sentences[activeItem] = poems[activeItem].poem
       .trim()
       .split(" ")
       .map((data) => {
         return {
           word: data,
-          color: "black",
+          color: "black"
         };
       });
     setActualSentences(sentences);
-    resetCurrentTranscript()
+    resetCurrentTranscript();
   };
 
   const resetCurrentTranscript = () => {
@@ -101,21 +102,28 @@ function App() {
       newTranscript[activeItem] = "";
       return newTranscript;
     });
-  }
+  };
 
   return (
     <>
       <Navbar />
-      <Speech setTranscript={setTranscript} resetStory={resetStory} activeItem={activeItem} ref={childRef} />
+      <Speech
+        setTranscript={setTranscript}
+        resetStory={resetStory}
+        activeItem={activeItem}
+        ref={childRef}
+      />
       <div id="animation-carousel" className="relative w-full mt-8" data-carousel="static">
         <div className="relative rounded-lg h-full w-screen overflow-hidden">
           {actualSentences.map((actualSentence, index) => (
             <div
-              className={`${activeItem === index ? "" : "hidden"
-                } transition-all duration-200 ease-linear flex justify-center gap-8 h-full items-center`}
+              className={`${
+                activeItem === index ? "" : "hidden"
+              } transition-all duration-200 ease-linear flex justify-center gap-8 h-full items-center`}
               data-carousel-item={activeItem === index ? "active" : null}
               key={index}
-              style={{ left: `${index * 100}%` }}>
+              style={{ left: `${index * 100}%` }}
+            >
               <ViewWords key={index} actualSentence={actualSentence} image={poems[index].image} />
             </div>
           ))}
@@ -123,10 +131,11 @@ function App() {
         <div className="absolute z-30 flex  -translate-x-1/2 space-x-3 rtl:space-x-reverse left-1/2">
           {poems.map((poem, index) => (
             <button
-              key={index}
+              key={poem.poem.length}
               type="button"
-              className={`w-3 h-3 rounded-full ${activeItem === index ? "bg-[#289197]" : "bg-[#e9f3f4]"
-                } focus:outline-none`}
+              className={`w-3 h-3 rounded-full ${
+                activeItem === index ? "bg-[#289197]" : "bg-[#e9f3f4]"
+              } focus:outline-none`}
               aria-current={activeItem === index ? "true" : "false"}
               aria-label={`Slide ${index + 1}`}
               data-carousel-slide-to={index}
@@ -159,9 +168,11 @@ function App() {
           />
         </button>
       </div>
-      {transcripts[activeItem] &&
-        <p className="w-[1000px] text-nowrap px-4 overflow-hidden mx-auto text-xl mt-6 p-2 bg-[#e9f3f4] rounded-full font-medium text-center text-[#007c84]">{transcripts[activeItem]}</p>
-      }
+      {transcripts[activeItem] && (
+        <p className="w-[1000px] text-nowrap px-4 overflow-hidden mx-auto text-xl mt-6 p-2 bg-[#e9f3f4] rounded-full font-medium text-center text-[#007c84]">
+          {transcripts[activeItem]}
+        </p>
+      )}
     </>
   );
 }

@@ -8,14 +8,13 @@ interface SpeechProps {
   activeItem: number;
 }
 const Speech = forwardRef((props: SpeechProps, ref: ForwardedRef<unknown>) => {
-  const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } =
-    useSpeechRecognition();
+  const { transcript, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
 
-    useImperativeHandle(ref, ()=>{
-      return {
-        resetTranscript: resetTranscript,
-      }
-    })
+  useImperativeHandle(ref, () => {
+    return {
+      resetTranscript: resetTranscript
+    };
+  });
 
   const [play, setPlay] = useState(true);
 
@@ -25,7 +24,6 @@ const Speech = forwardRef((props: SpeechProps, ref: ForwardedRef<unknown>) => {
       newTranscript[props.activeItem] = transcript;
       return newTranscript;
     });
-    
   }, [transcript]);
 
   if (!browserSupportsSpeechRecognition) {
@@ -41,21 +39,30 @@ const Speech = forwardRef((props: SpeechProps, ref: ForwardedRef<unknown>) => {
     setPlay(true);
   };
 
- const resetListening = () => {
+  const resetListening = () => {
     resetTranscript();
     props.resetStory();
   };
 
   return (
     <div className="flex gap-4 justify-end w-full pr-16">
-      <RefreshCcw className="w-12 h-12 bg-[#e9f3f4] p-2 rounded-full text-[#007c84] shadow-md cursor-pointer" onClick={resetListening} />
+      <RefreshCcw
+        className="w-12 h-12 bg-[#e9f3f4] p-2 rounded-full text-[#007c84] shadow-md cursor-pointer"
+        onClick={resetListening}
+      />
       {play ? (
-        <MicOffIcon className="w-12 h-12 text-[#e9f3f4] p-2 rounded-full bg-[#007c84] shadow-md cursor-pointer" onClick={keepListeneing} />
+        <MicOffIcon
+          className="w-12 h-12 text-[#e9f3f4] p-2 rounded-full bg-[#007c84] shadow-md cursor-pointer"
+          onClick={keepListeneing}
+        />
       ) : (
-        <MicIcon className="w-12 h-12 text-[#e9f3f4] p-2 rounded-full bg-[#007c84] cursor-pointer" onClick={pauseListening} />
+        <MicIcon
+          className="w-12 h-12 text-[#e9f3f4] p-2 rounded-full bg-[#007c84] cursor-pointer"
+          onClick={pauseListening}
+        />
       )}
     </div>
   );
-})
+});
 
 export default Speech;
