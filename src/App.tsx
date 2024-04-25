@@ -63,12 +63,12 @@ function App() {
         ) {
           const tempSentences = [...actualSentences];
           console.log("IF :", tempSentences);
-          tempSentences[activeItem][i] = { ...tempSentences[activeItem][i], color: "blue" };
+          tempSentences[activeItem][i] = { ...tempSentences[activeItem][i], color: "#2196f3" };
           setActualSentences(tempSentences);
         } else {
           const tempSentences = [...actualSentences];
           console.log("ELSE :", tempSentences);
-          tempSentences[activeItem][i] = { ...tempSentences[activeItem][i], color: "red" };
+          tempSentences[activeItem][i] = { ...tempSentences[activeItem][i], color: "#f44336" };
           setActualSentences(tempSentences);
         }
       }
