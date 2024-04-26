@@ -11,6 +11,8 @@ import {
   SelectTrigger,
   SelectValue
 } from "./ui/select";
+import { AudioRecorder } from "react-audio-voice-recorder";
+import AudioRecorderComponent from "./AudioRecord";
 
 interface SpeechProps {
   setTranscript: React.Dispatch<React.SetStateAction<string[]>>;
@@ -95,6 +97,7 @@ const Speech = forwardRef((props: SpeechProps, ref: ForwardedRef<unknown>) => {
           </SelectGroup>
         </SelectContent>
       </Select>
+      <AudioRecorderComponent />
     </div>
   );
 });
