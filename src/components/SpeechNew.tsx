@@ -1,11 +1,23 @@
 import { MicIcon, MicOffIcon, RefreshCcw } from "lucide-react";
 import React, { ForwardedRef, forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
+import BrowserNotSupport from "./BrowserNotSupport";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue
+} from "./ui/select";
 
 interface SpeechProps {
   setTranscript: React.Dispatch<React.SetStateAction<string[]>>;
   resetStory: () => void;
   activeItem: number;
+  language: string;
+  setLanguage: React.Dispatch<React.SetStateAction<string>>;
 }
 const Speech = forwardRef((props: SpeechProps, ref: ForwardedRef<unknown>) => {
   const { transcript, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
@@ -27,10 +39,10 @@ const Speech = forwardRef((props: SpeechProps, ref: ForwardedRef<unknown>) => {
   }, [transcript]);
 
   if (!browserSupportsSpeechRecognition) {
-    return <span>Browser doesn't support speech recognition.</span>;
+    return <BrowserNotSupport />;
   }
   const keepListeneing = () => {
-    SpeechRecognition.startListening({ continuous: true });
+    SpeechRecognition.startListening({ continuous: true, language: props.language });
     setPlay(false);
   };
 
@@ -45,7 +57,7 @@ const Speech = forwardRef((props: SpeechProps, ref: ForwardedRef<unknown>) => {
   };
 
   return (
-    <div className="flex gap-4 justify-end w-full pr-16">
+    <div className="flex gap-4 justify-end items-center w-full pr-16">
       <RefreshCcw
         className="w-12 h-12 bg-[#e9f3f4] p-2 rounded-full text-[#007c84] shadow-md cursor-pointer"
         onClick={resetListening}
@@ -61,6 +73,28 @@ const Speech = forwardRef((props: SpeechProps, ref: ForwardedRef<unknown>) => {
           onClick={pauseListening}
         />
       )}
+      <Select onValueChange={(value: string) => props.setLanguage(value)}>
+        <SelectTrigger className="w-[180px] h-full bg-[#e9f3f4] border-0 text-[#007c84] font-medium">
+          <SelectValue placeholder="Select a language" />
+        </SelectTrigger>
+        <SelectContent className="bg-[#e9f3f4]">
+          <SelectGroup>
+            <SelectLabel className="text-[#007c84] ">Language</SelectLabel>
+            <SelectItem className="text-[#007c84]" value="ta-IN">
+              Tamil
+            </SelectItem>
+            <SelectItem className="text-[#007c84]" value="en-IN">
+              English
+            </SelectItem>
+            <SelectItem className="text-[#007c84]" value="hi-IN">
+              Hindi
+            </SelectItem>
+            <SelectItem className="text-[#007c84]" value="jp-JP">
+              Japanese
+            </SelectItem>
+          </SelectGroup>
+        </SelectContent>
+      </Select>
     </div>
   );
 });
