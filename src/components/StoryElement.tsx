@@ -106,8 +106,10 @@ function StoryElement() {
       }
       if (reachedEnd && transcript.length === actualSentences[activeItem].length) {
         // nextItem();
-        // @ts-expect-error undefined error
+        //@ts-expect-error undefined
         childRef.current?.resetTranscript();
+        //@ts-expect-error undefined
+        childRef.current?.pauseListening();
       }
       console.log(actualSentences);
     }

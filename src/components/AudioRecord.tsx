@@ -5,25 +5,23 @@ import { useAudioRecorder } from "react-audio-voice-recorder";
 const AudioRecorderComponent = () => {
   const [isRecording, setIsRecording] = useState(false);
   const { startRecording, stopRecording, recordingBlob } = useAudioRecorder();
-  const [audioURL, setAudioURL] = useState("");
+  const [audioURL, setAudioURL] = useState<string | null>(null);
 
   const handleRecordClick = () => {
     if (!isRecording) {
       startRecording();
+      console.log("IF ....");
     } else {
-      stopRecording();
-      setAudioURL(URL.createObjectURL(recordingBlob));
-      // addAudioElement(URL.createObjectURL(recordingBlob));
+      if (recordingBlob) {
+        const newURL = URL.createObjectURL(recordingBlob);
+        setAudioURL(newURL);
+        console.log("IBSIDE ELSE IF");
+        stopRecording();
+      }
+      console.log("IBSIDE ELSE");
     }
     setIsRecording((prevState) => !prevState);
   };
-
-  // const addAudioElement = (blobURL) => {
-  //   const audio = document.createElement("audio");
-  //   audio.src = blobURL;
-  //   audio.controls = true;
-  //   document.body.appendChild(audio);
-  // };
 
   return (
     <div>

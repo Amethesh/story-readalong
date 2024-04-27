@@ -11,8 +11,8 @@ import {
   SelectTrigger,
   SelectValue
 } from "./ui/select";
-import { AudioRecorder } from "react-audio-voice-recorder";
-import AudioRecorderComponent from "./AudioRecord";
+// import AudioRecorderComponent from "./AudioRecord";
+import { useAudioRecorder } from "react-audio-voice-recorder";
 
 interface SpeechProps {
   setTranscript: React.Dispatch<React.SetStateAction<string[]>>;
@@ -26,11 +26,21 @@ const Speech = forwardRef((props: SpeechProps, ref: ForwardedRef<unknown>) => {
 
   useImperativeHandle(ref, () => {
     return {
-      resetTranscript: resetTranscript
+      resetTranscript: resetTranscript,
+      pauseListening: pauseListening
     };
   });
 
   const [play, setPlay] = useState(true);
+  const { startRecording, stopRecording, recordingBlob } = useAudioRecorder();
+  const [audioURL, setAudioURL] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (recordingBlob) {
+      const newURL = URL.createObjectURL(recordingBlob);
+      setAudioURL(newURL);
+    }
+  }, [recordingBlob]);
 
   useEffect(() => {
     props.setTranscript((prevTranscript) => {
@@ -45,11 +55,17 @@ const Speech = forwardRef((props: SpeechProps, ref: ForwardedRef<unknown>) => {
   }
   const keepListeneing = () => {
     SpeechRecognition.startListening({ continuous: true, language: props.language });
+    startRecording();
     setPlay(false);
   };
 
   const pauseListening = () => {
     SpeechRecognition.stopListening();
+    // if (recordingBlob) {
+    //   const newURL = URL.createObjectURL(recordingBlob);
+    //   setAudioURL(newURL);
+    // }
+    stopRecording();
     setPlay(true);
   };
 
@@ -60,6 +76,7 @@ const Speech = forwardRef((props: SpeechProps, ref: ForwardedRef<unknown>) => {
 
   return (
     <div className="flex gap-4 justify-end items-center w-full pr-16">
+      {audioURL && <audio src={audioURL} controls />}
       <RefreshCcw
         className="w-12 h-12 bg-[#e9f3f4] p-2 rounded-full text-[#007c84] shadow-md cursor-pointer"
         onClick={resetListening}
@@ -75,7 +92,7 @@ const Speech = forwardRef((props: SpeechProps, ref: ForwardedRef<unknown>) => {
           onClick={pauseListening}
         />
       )}
-      <Select onValueChange={(value: string) => props.setLanguage(value)}>
+      <Select defaultValue="en-IN" onValueChange={(value: string) => props.setLanguage(value)}>
         <SelectTrigger className="w-[180px] h-full bg-[#e9f3f4] border-0 text-[#007c84] font-medium">
           <SelectValue placeholder="Select a language" />
         </SelectTrigger>
@@ -97,7 +114,7 @@ const Speech = forwardRef((props: SpeechProps, ref: ForwardedRef<unknown>) => {
           </SelectGroup>
         </SelectContent>
       </Select>
-      <AudioRecorderComponent />
+      {/* <AudioRecorderComponent /> */}
     </div>
   );
 });
