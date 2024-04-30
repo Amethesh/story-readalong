@@ -17,8 +17,10 @@ function StoryElement() {
   const [language, setLanguage] = useState("en-IN");
   const [activeItem, setActiveItem] = useState(0);
   const [transcripts, setTranscript] = useState<string[]>([]);
-  const [actualSentences, setActualSentences] = useState<{ word: string; color: string; readFlag: boolean }[][]>([]);
-  const [missedWords, setMissedWords] = useState<{ word: string; color: string; readFlag: boolean; index: number }[][]>([])
+  const [actualSentences, setActualSentences] = useState<{ word: string; class: string; readFlag: boolean }[][]>([]);
+  const [chances, setChances] = useState<number>(4);
+  const [wordIndex, setWordIndex] = useState<number>(0);
+  let wordMispelled = false
 
   useEffect(() => {
     const fetchStoryData = async () => {
@@ -54,7 +56,7 @@ function StoryElement() {
         .map((data) => {
           return {
             word: data,
-            color: "black",
+            class: "black",
             readFlag: false
           };
         })
@@ -65,57 +67,132 @@ function StoryElement() {
   }, [storyData]);
 
   const childRef = useRef();
-
   useEffect(() => {
+    console.log("Chances left: " + chances)
+    console.log("Word mispelled: " + wordMispelled)
+
     if (transcripts && transcripts[activeItem]) {
-      console.log(transcripts);
       const transcript = transcripts[activeItem].split(" ");
-      let reachedEnd = true;
-      for (let i = 0; i < actualSentences[activeItem].length; i++) {
-        if (transcript.length === i && i !== 0) {
-          reachedEnd = false;
-          break;
+
+      if (!wordMispelled) {
+        setChances(4)
+      }
+
+      // let wordIndex = 0
+      if (wordIndex < actualSentences[activeItem].length) {
+
+        const currentElement = transcript[transcript.length - 1];
+        console.log(currentElement)
+
+        if (currentElement.toLocaleLowerCase() === actualSentences[activeItem][wordIndex].word.replace(/[^a-zA-Z0-9]/g, "").toLowerCase()) {
+
+          console.log("Current word spoken is matching with the existing current word")
+
+          // change colour to blue
+          const tempSentences = [...actualSentences];
+          tempSentences[activeItem][wordIndex] = { ...tempSentences[activeItem][wordIndex], class: "blue" };
+          setActualSentences(tempSentences);
+
+          //go to the next actual sentence.
+          setWordIndex(wordIndex + 1)
+
         }
-        //Main logic
-        if (language === "en-IN") {
-          if (
-            actualSentences[activeItem][i].word.replace(/[^a-zA-Z0-9]/g, "").toLowerCase() ===
-            transcript[i].toLowerCase()
-          ) {
-            const tempSentences = [...actualSentences];
-            console.log("IF :", tempSentences[activeItem][i]);
-            tempSentences[activeItem][i] = { ...tempSentences[activeItem][i], color: "#2196f3" };
-            setActualSentences(tempSentences);
-          } else {
-            const tempSentences = [...actualSentences];
-            console.log("ELSE :", tempSentences[activeItem][i]);
-            tempSentences[activeItem][i] = { ...tempSentences[activeItem][i], color: "#f44336" };
-            setActualSentences(tempSentences);
-          }
-        } else {
-          if (actualSentences[activeItem][i].word === transcript[i].toLowerCase()) {
-            const tempSentences = [...actualSentences];
-            console.log("IF :", tempSentences[activeItem][i]);
-            tempSentences[activeItem][i] = { ...tempSentences[activeItem][i], color: "#2196f3" };
-            setActualSentences(tempSentences);
-          } else {
-            const tempSentences = [...actualSentences];
-            console.log("ELSE :", tempSentences[activeItem][i]);
-            tempSentences[activeItem][i] = { ...tempSentences[activeItem][i], color: "#f44336" };
-            setActualSentences(tempSentences);
+        else {
+          console.log("Current word spoken is not matching with the actual sentence")
+          const tempSentences = [...actualSentences];
+          tempSentences[activeItem][wordIndex] = { ...tempSentences[activeItem][wordIndex], class: "yellow" };
+          setActualSentences(tempSentences);
+
+          if (chances >= 0) {
+            // setWordMispelled(true)
+            wordMispelled = true
+            if (chances == 0) {
+              console.log("the element can no longer considered for reading.")
+              const tempSentences = [...actualSentences];
+              tempSentences[activeItem][wordIndex] = { ...tempSentences[activeItem][wordIndex], class: "red" };
+              setActualSentences(tempSentences);
+              setWordIndex(wordIndex + 1)
+              // setWordMispelled(false)
+              wordMispelled = false
+            }
+            else {
+              const currentElement = transcript[transcript.length - 1];
+              if (currentElement.toLocaleLowerCase() === actualSentences[activeItem][wordIndex].word.replace(/[^a-zA-Z0-9]/g, "").toLowerCase()) {
+                console.log("Current word spoken is matching with the existing current word")
+                // change colour to blue
+                const tempSentences = [...actualSentences];
+                tempSentences[activeItem][wordIndex] = { ...tempSentences[activeItem][wordIndex], class: "blue" };
+                setActualSentences(tempSentences);
+
+                //go to the next actual sentence.
+                setWordIndex(wordIndex + 1)
+                // setWordMispelled(false)
+                wordMispelled = false
+
+              }
+              else {
+                //even now the word is wrong
+                console.log("User has only " + chances + " chance left")
+                setChances(chances - 1)
+
+              }
+            }
           }
         }
       }
-      if (reachedEnd && transcript.length === actualSentences[activeItem].length) {
-        // nextItem();
-        //@ts-expect-error undefined
-        childRef.current?.resetTranscript();
-        //@ts-expect-error undefined
-        childRef.current?.pauseListening();
-      }
-      console.log(actualSentences);
     }
-  }, [transcripts]);
+  }, [transcripts])
+
+  // useEffect(() => {
+  //   if (transcripts && transcripts[activeItem]) {
+  //     console.log(transcripts);
+  //     const transcript = transcripts[activeItem].split(" ");
+  //     let reachedEnd = true;
+  //     for (let i = 0; i < actualSentences[activeItem].length; i++) {
+  //       if (transcript.length === i && i !== 0) {
+  //         reachedEnd = false;
+  //         break;
+  //       }
+  //       //Main logic
+  //       if (language === "en-IN") {
+  //         if (
+  //           actualSentences[activeItem][i].word.replace(/[^a-zA-Z0-9]/g, "").toLowerCase() ===
+  //           transcript[i].toLowerCase()
+  //         ) {
+  //           const tempSentences = [...actualSentences];
+  //           console.log("IF :", tempSentences[activeItem][i]);
+  //           tempSentences[activeItem][i] = { ...tempSentences[activeItem][i], class: "blue" };
+  //           setActualSentences(tempSentences);
+  //         } else {
+  //           const tempSentences = [...actualSentences];
+  //           console.log("ELSE :", tempSentences[activeItem][i]);
+  //           tempSentences[activeItem][i] = { ...tempSentences[activeItem][i], class: "red" };
+  //           setActualSentences(tempSentences);
+  //         }
+  //       } else {
+  //         if (actualSentences[activeItem][i].word === transcript[i].toLowerCase()) {
+  //           const tempSentences = [...actualSentences];
+  //           console.log("IF :", tempSentences[activeItem][i]);
+  //           tempSentences[activeItem][i] = { ...tempSentences[activeItem][i], class: "blue" };
+  //           setActualSentences(tempSentences);
+  //         } else {
+  //           const tempSentences = [...actualSentences];
+  //           console.log("ELSE :", tempSentences[activeItem][i]);
+  //           tempSentences[activeItem][i] = { ...tempSentences[activeItem][i], class: "red" };
+  //           setActualSentences(tempSentences);
+  //         }
+  //       }
+  //     }
+  //     if (reachedEnd && transcript.length === actualSentences[activeItem].length) {
+  //       // nextItem();
+  //       // @ts-expect-error undefined
+  //       childRef.current?.resetTranscript();
+  //       //@ts-expect-error undefined
+  //       childRef.current?.pauseListening();
+  //     }
+  //     console.log(actualSentences);
+  //   }
+  // }, [transcripts]);
 
   const resetStory = () => {
     const sentences = [...actualSentences];
@@ -125,7 +202,7 @@ function StoryElement() {
       .map((data) => {
         return {
           word: data,
-          color: "black",
+          class: "black",
           readFlag: false
         };
       });

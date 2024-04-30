@@ -7,6 +7,43 @@ audio::-webkit-media-controls-panel {
   padding: 20px;
 }
 
+
+span.black{
+  font-weight: normal;
+  color: black;
+}
+
+span.red{
+  font-weight: 500;
+  color: red;
+  display: inline-block;
+  padding-right: 8px;
+  animation: skew-y-shake 0.5s;
+}
+
+span.yellow{
+  font-weight: 400;
+  color: yellow;
+  display: inline-block;
+  padding-right: 8px;
+  animation: skew-y-shake 0.5s infinite;
+}
+
+span.blue{
+  font-weight: 500;
+  color: blue;
+}
+
+@keyframes skew-y-shake {
+  0% { transform: skewY(-15deg); }
+  5% { transform: skewY(15deg); }
+  10% { transform: skewY(-15deg); }
+  15% { transform: skewY(1deg); }
+  20% { transform: skewY(0deg); }
+  100% { transform: skewY(0deg); }  
+}
+
+
 @layer base {
   :root {
     --background: 0 0% 100%;

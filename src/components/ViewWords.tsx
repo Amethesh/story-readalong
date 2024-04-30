@@ -1,5 +1,5 @@
 interface ViewWordsProps {
-  actualSentence: { word: string; color: string }[];
+  actualSentence: { word: string; class: string }[];
   image: string;
 }
 
@@ -13,7 +13,7 @@ const ViewWords = (props: ViewWordsProps) => {
       />
       <div className="text-[40px] m-8">
         {props.actualSentence.map((data, index) => (
-          <span key={index} className="font-semibold" style={{ color: data.color }}>
+          <span key={index} className={data.class} >
             {data.word + " "}
           </span>
         ))}

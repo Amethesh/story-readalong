@@ -7,7 +7,6 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue
 } from "./ui/select";
@@ -25,15 +24,21 @@ const Speech = forwardRef((props: SpeechProps, ref: ForwardedRef<unknown>) => {
   const { transcript, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
 
   useImperativeHandle(ref, () => {
-    return {
-      resetTranscript: resetTranscript,
-      pauseListening: pauseListening
-    };
+    if(browserSupportsSpeechRecognition){
+      return {
+        resetTranscript: resetTranscript,
+        pauseListening: pauseListening
+      };
+    }
   });
-
+  
   const [play, setPlay] = useState(true);
   const { startRecording, stopRecording, recordingBlob } = useAudioRecorder();
   const [audioURL, setAudioURL] = useState<string | null>(null);
+
+  if (!browserSupportsSpeechRecognition) {
+    return <BrowserNotSupport />;
+  }
 
   useEffect(() => {
     if (recordingBlob) {
@@ -50,9 +55,6 @@ const Speech = forwardRef((props: SpeechProps, ref: ForwardedRef<unknown>) => {
     });
   }, [transcript]);
 
-  if (!browserSupportsSpeechRecognition) {
-    return <BrowserNotSupport />;
-  }
   const keepListeneing = () => {
     console.log(props.language)
     SpeechRecognition.startListening({ continuous: true, language: props.language });
@@ -62,6 +64,7 @@ const Speech = forwardRef((props: SpeechProps, ref: ForwardedRef<unknown>) => {
 
   const pauseListening = () => {
     SpeechRecognition.stopListening();
+    console.log("Paused!!!!!")
     stopRecording();
     setPlay(true);
   };
