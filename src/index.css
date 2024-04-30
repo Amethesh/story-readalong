@@ -15,23 +15,26 @@ span.black{
 
 span.red{
   font-weight: 500;
-  color: red;
+  color: #ff6b6b;
   display: inline-block;
   padding-right: 8px;
   animation: skew-y-shake 0.5s;
+  text-decoration: underline dashed gray;
 }
 
 span.yellow{
   font-weight: 400;
-  color: yellow;
+  color: #ffbc08;
   display: inline-block;
   padding-right: 8px;
-  animation: skew-y-shake 0.5s infinite;
+  animation: skew-y-shake 1s infinite;
+  text-decoration: underline dashed gray;
 }
 
 span.blue{
   font-weight: 500;
-  color: blue;
+  color: cornflowerblue;
+  text-decoration: underline dashed gray;
 }
 
 @keyframes skew-y-shake {

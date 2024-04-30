@@ -18,7 +18,7 @@ function StoryElement() {
   const [activeItem, setActiveItem] = useState(0);
   const [transcripts, setTranscript] = useState<string[]>([]);
   const [actualSentences, setActualSentences] = useState<{ word: string; class: string; readFlag: boolean }[][]>([]);
-  const [chances, setChances] = useState<number>(4);
+  const [chances, setChances] = useState<number>(3);
   const [wordIndex, setWordIndex] = useState<number>(0);
   let wordMispelled = false
 
@@ -37,10 +37,12 @@ function StoryElement() {
 
   const nextItem = () => {
     setActiveItem((prevItem) => (prevItem === storyData.length - 1 ? 0 : prevItem + 1));
+    setWordIndex(0)
   };
-
+  
   const prevItem = () => {
     setActiveItem((prevItem) => (prevItem === 0 ? storyData.length - 1 : prevItem - 1));
+    setWordIndex(0)
   };
   const goToItem = (index: number) => {
     setActiveItem(index);
@@ -67,24 +69,23 @@ function StoryElement() {
   }, [storyData]);
 
   const childRef = useRef();
+
   useEffect(() => {
     console.log("Chances left: " + chances)
     console.log("Word mispelled: " + wordMispelled)
 
     if (transcripts && transcripts[activeItem]) {
       const transcript = transcripts[activeItem].split(" ");
-
       if (!wordMispelled) {
-        setChances(4)
+        setChances(3)
       }
-
       // let wordIndex = 0
       if (wordIndex < actualSentences[activeItem].length) {
 
         const currentElement = transcript[transcript.length - 1];
         console.log(currentElement)
 
-        if (currentElement.toLocaleLowerCase() === actualSentences[activeItem][wordIndex].word.replace(/[^a-zA-Z0-9]/g, "").toLowerCase()) {
+        if (currentElement.toLocaleLowerCase() === actualSentences[activeItem][wordIndex].word.replace(/[".,:'";\-_ 0-9]/g, "").toLocaleLowerCase()) {
 
           console.log("Current word spoken is matching with the existing current word")
 
@@ -117,24 +118,21 @@ function StoryElement() {
             }
             else {
               const currentElement = transcript[transcript.length - 1];
-              if (currentElement.toLocaleLowerCase() === actualSentences[activeItem][wordIndex].word.replace(/[^a-zA-Z0-9]/g, "").toLowerCase()) {
+              if (currentElement.toLocaleLowerCase() === actualSentences[activeItem][wordIndex].word.replace(/[".,:'";\-_ 0-9]/g, "").toLocaleLowerCase()) {
                 console.log("Current word spoken is matching with the existing current word")
                 // change colour to blue
                 const tempSentences = [...actualSentences];
                 tempSentences[activeItem][wordIndex] = { ...tempSentences[activeItem][wordIndex], class: "blue" };
                 setActualSentences(tempSentences);
-
                 //go to the next actual sentence.
                 setWordIndex(wordIndex + 1)
                 // setWordMispelled(false)
                 wordMispelled = false
-
               }
               else {
                 //even now the word is wrong
                 console.log("User has only " + chances + " chance left")
                 setChances(chances - 1)
-
               }
             }
           }
@@ -142,57 +140,6 @@ function StoryElement() {
       }
     }
   }, [transcripts])
-
-  // useEffect(() => {
-  //   if (transcripts && transcripts[activeItem]) {
-  //     console.log(transcripts);
-  //     const transcript = transcripts[activeItem].split(" ");
-  //     let reachedEnd = true;
-  //     for (let i = 0; i < actualSentences[activeItem].length; i++) {
-  //       if (transcript.length === i && i !== 0) {
-  //         reachedEnd = false;
-  //         break;
-  //       }
-  //       //Main logic
-  //       if (language === "en-IN") {
-  //         if (
-  //           actualSentences[activeItem][i].word.replace(/[^a-zA-Z0-9]/g, "").toLowerCase() ===
-  //           transcript[i].toLowerCase()
-  //         ) {
-  //           const tempSentences = [...actualSentences];
-  //           console.log("IF :", tempSentences[activeItem][i]);
-  //           tempSentences[activeItem][i] = { ...tempSentences[activeItem][i], class: "blue" };
-  //           setActualSentences(tempSentences);
-  //         } else {
-  //           const tempSentences = [...actualSentences];
-  //           console.log("ELSE :", tempSentences[activeItem][i]);
-  //           tempSentences[activeItem][i] = { ...tempSentences[activeItem][i], class: "red" };
-  //           setActualSentences(tempSentences);
-  //         }
-  //       } else {
-  //         if (actualSentences[activeItem][i].word === transcript[i].toLowerCase()) {
-  //           const tempSentences = [...actualSentences];
-  //           console.log("IF :", tempSentences[activeItem][i]);
-  //           tempSentences[activeItem][i] = { ...tempSentences[activeItem][i], class: "blue" };
-  //           setActualSentences(tempSentences);
-  //         } else {
-  //           const tempSentences = [...actualSentences];
-  //           console.log("ELSE :", tempSentences[activeItem][i]);
-  //           tempSentences[activeItem][i] = { ...tempSentences[activeItem][i], class: "red" };
-  //           setActualSentences(tempSentences);
-  //         }
-  //       }
-  //     }
-  //     if (reachedEnd && transcript.length === actualSentences[activeItem].length) {
-  //       // nextItem();
-  //       // @ts-expect-error undefined
-  //       childRef.current?.resetTranscript();
-  //       //@ts-expect-error undefined
-  //       childRef.current?.pauseListening();
-  //     }
-  //     console.log(actualSentences);
-  //   }
-  // }, [transcripts]);
 
   const resetStory = () => {
     const sentences = [...actualSentences];
@@ -208,6 +155,7 @@ function StoryElement() {
       });
     setActualSentences(sentences);
     resetCurrentTranscript();
+    setWordIndex(0)
   };
 
   const resetCurrentTranscript = () => {
