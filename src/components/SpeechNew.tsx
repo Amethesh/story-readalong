@@ -54,6 +54,7 @@ const Speech = forwardRef((props: SpeechProps, ref: ForwardedRef<unknown>) => {
     return <BrowserNotSupport />;
   }
   const keepListeneing = () => {
+    console.log(props.language)
     SpeechRecognition.startListening({ continuous: true, language: props.language });
     startRecording();
     setPlay(false);
@@ -61,10 +62,6 @@ const Speech = forwardRef((props: SpeechProps, ref: ForwardedRef<unknown>) => {
 
   const pauseListening = () => {
     SpeechRecognition.stopListening();
-    // if (recordingBlob) {
-    //   const newURL = URL.createObjectURL(recordingBlob);
-    //   setAudioURL(newURL);
-    // }
     stopRecording();
     setPlay(true);
   };
@@ -73,6 +70,13 @@ const Speech = forwardRef((props: SpeechProps, ref: ForwardedRef<unknown>) => {
     resetTranscript();
     props.resetStory();
   };
+
+  const handleChangeLanguage = (lang: string) => {
+    console.log("lang:", lang)
+    props.setLanguage(lang)
+    pauseListening()
+    resetListening()
+  }
 
   return (
     <div className="flex gap-4 justify-end items-center w-full pr-16">
@@ -92,13 +96,12 @@ const Speech = forwardRef((props: SpeechProps, ref: ForwardedRef<unknown>) => {
           onClick={pauseListening}
         />
       )}
-      <Select defaultValue="en-IN" onValueChange={(value: string) => props.setLanguage(value)}>
+      <Select defaultValue="en-IN" onValueChange={(value: string) => handleChangeLanguage(value)}>
         <SelectTrigger className="w-[180px] h-full bg-[#e9f3f4] border-0 text-[#007c84] font-medium">
           <SelectValue placeholder="Select a language" />
         </SelectTrigger>
         <SelectContent className="bg-[#e9f3f4]">
           <SelectGroup>
-            <SelectLabel className="text-[#007c84] ">Language</SelectLabel>
             <SelectItem className="text-[#007c84]" value="ta-IN">
               Tamil
             </SelectItem>

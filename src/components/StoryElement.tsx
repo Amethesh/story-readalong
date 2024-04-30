@@ -17,7 +17,8 @@ function StoryElement() {
   const [language, setLanguage] = useState("en-IN");
   const [activeItem, setActiveItem] = useState(0);
   const [transcripts, setTranscript] = useState<string[]>([]);
-  const [actualSentences, setActualSentences] = useState<{ word: string; color: string }[][]>([]);
+  const [actualSentences, setActualSentences] = useState<{ word: string; color: string; readFlag: boolean }[][]>([]);
+  const [missedWords, setMissedWords] = useState<{ word: string; color: string; readFlag: boolean; index: number }[][]>([])
 
   useEffect(() => {
     const fetchStoryData = async () => {
@@ -53,7 +54,8 @@ function StoryElement() {
         .map((data) => {
           return {
             word: data,
-            color: "black"
+            color: "black",
+            readFlag: false
           };
         })
     );
@@ -123,7 +125,8 @@ function StoryElement() {
       .map((data) => {
         return {
           word: data,
-          color: "black"
+          color: "black",
+          readFlag: false
         };
       });
     setActualSentences(sentences);
@@ -153,9 +156,8 @@ function StoryElement() {
         <div className="relative rounded-lg h-full w-screen overflow-hidden">
           {actualSentences.map((actualSentence, index) => (
             <div
-              className={`${
-                activeItem === index ? "" : "hidden"
-              } transition-all duration-200 ease-linear flex justify-center gap-8 h-full items-center`}
+              className={`${activeItem === index ? "" : "hidden"
+                } transition-all duration-200 ease-linear flex justify-center gap-8 h-full items-center`}
               data-carousel-item={activeItem === index ? "active" : null}
               key={index}
               style={{ left: `${index * 100}%` }}
@@ -173,9 +175,8 @@ function StoryElement() {
             <button
               key={poem.poem.length}
               type="button"
-              className={`w-3 h-3 rounded-full ${
-                activeItem === index ? "bg-[#289197]" : "bg-[#e9f3f4]"
-              } focus:outline-none`}
+              className={`w-3 h-3 rounded-full ${activeItem === index ? "bg-[#289197]" : "bg-[#e9f3f4]"
+                } focus:outline-none`}
               aria-current={activeItem === index ? "true" : "false"}
               aria-label={`Slide ${index + 1}`}
               data-carousel-slide-to={index}
