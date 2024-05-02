@@ -206,6 +206,7 @@ function StoryElement() {
                 key={index}
                 actualSentence={actualSentence}
                 image={storyData[index].image}
+                chances={chances}
               />
             </div>
           ))}

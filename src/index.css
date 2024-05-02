@@ -7,10 +7,6 @@ audio::-webkit-media-controls-panel {
   padding: 20px;
 }
 
-/* .lucide{
-  color: rgb(83, 83, 176)
-} */
-
 .black{
   font-weight: normal;
   color: black;
@@ -33,6 +29,12 @@ audio::-webkit-media-controls-panel {
   padding-right: 8px;
   animation: skew-y-shake 1s infinite;
   text-decoration: underline dashed #ffbc08;
+  padding: 10px;
+  border-width: 2px;
+  border-radius: 20px;
+  background-color: #f5f5f5c3;
+  font-size: 50px;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;;
 }
 
 .blue{
