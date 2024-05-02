@@ -14,7 +14,7 @@ function StoryElement() {
   // const params = useParams();
   // console.log(params.storyId);
   const [storyData, setStoryData] = useState<PoemData[]>([]);
-  const [language, setLanguage] = useState("en-IN");
+  const [language, setLanguage] = useState("en-US");
   const [activeItem, setActiveItem] = useState(0);
   const [transcripts, setTranscript] = useState<string[]>([]);
   const [actualSentences, setActualSentences] = useState<{ word: string; class: string; readFlag: boolean }[][]>([]);
@@ -69,8 +69,8 @@ function StoryElement() {
   const childRef = useRef();
 
   useEffect(() => {
-    console.log("Chances left: " + chances)
-    console.log("Word mispelled: " + wordMispelled)
+    // console.log("Chances left: " + chances)
+    // console.log("Word mispelled: " + wordMispelled)
 
     if (transcripts && transcripts[activeItem]) {
       const transcript = transcripts[activeItem].split(" ");
@@ -81,19 +81,18 @@ function StoryElement() {
       if (wordIndex[activeItem] < actualSentences[activeItem].length) {
 
         const currentElement = transcript[transcript.length - 1];
-        console.log(currentElement)
+        // console.log(currentElement)
 
         if (currentElement.toLocaleLowerCase() === actualSentences[activeItem][wordIndex[activeItem]].word.replace(/[".,:'";\-_ 0-9]/g, "").toLocaleLowerCase()) {
 
-          console.log("Current word spoken is matching with the existing current word")
+          // console.log("Current word spoken is matching with the existing current word")
 
           // change colour to blue
           const tempSentences = [...actualSentences];
-          tempSentences[activeItem][wordIndex[activeItem]] = {
-            ...tempSentences[activeItem][wordIndex[activeItem]],
-            class: "blue",
-          };
+          tempSentences[activeItem][wordIndex[activeItem]] = { ...tempSentences[activeItem][wordIndex[activeItem]], class: "blue", readFlag: true };
           setActualSentences(tempSentences);
+
+
           //go to the next actual sentence.
           setWordIndex((prevWordIndex) => {
             const newWordIndex = [...prevWordIndex];
@@ -102,18 +101,18 @@ function StoryElement() {
           });
         }
         else {
-          console.log("Current word spoken is not matching with the actual sentence")
+          // console.log("Current word spoken is not matching with the actual sentence")
           const tempSentences = [...actualSentences];
-          tempSentences[activeItem][wordIndex[activeItem]] = { ...tempSentences[activeItem][wordIndex[activeItem]], class: "yellow" };
+          tempSentences[activeItem][wordIndex[activeItem]] = { ...tempSentences[activeItem][wordIndex[activeItem]], class: "yellow", readFlag: true };
           setActualSentences(tempSentences);
 
           if (chances >= 0) {
             // setWordMispelled(true)
             wordMispelled = true
             if (chances == 0) {
-              console.log("the element can no longer considered for reading.")
+              // console.log("the element can no longer considered for reading.")
               const tempSentences = [...actualSentences];
-              tempSentences[activeItem][wordIndex[activeItem]] = { ...tempSentences[activeItem][wordIndex[activeItem]], class: "red" };
+              tempSentences[activeItem][wordIndex[activeItem]] = { ...tempSentences[activeItem][wordIndex[activeItem]], class: "red", readFlag: true };
               setActualSentences(tempSentences);
               setWordIndex((prevWordIndex) => {
                 const newWordIndex = [...prevWordIndex];
@@ -126,10 +125,10 @@ function StoryElement() {
             else {
               const currentElement = transcript[transcript.length - 1];
               if (currentElement.toLocaleLowerCase() === actualSentences[activeItem][wordIndex[activeItem]].word.replace(/[".,:'";\-_ 0-9]/g, "").toLocaleLowerCase()) {
-                console.log("Current word spoken is matching with the existing current word")
+                // console.log("Current word spoken is matching with the existing current word")
                 // change colour to blue
                 const tempSentences = [...actualSentences];
-                tempSentences[activeItem][wordIndex[activeItem]] = { ...tempSentences[activeItem][wordIndex[activeItem]], class: "blue" };
+                tempSentences[activeItem][wordIndex[activeItem]] = { ...tempSentences[activeItem][wordIndex[activeItem]], class: "blue", readFlag: true };
                 setActualSentences(tempSentences);
                 //go to the next actual sentence.
                 setWordIndex((prevWordIndex) => {
@@ -142,7 +141,7 @@ function StoryElement() {
               }
               else {
                 //even now the word is wrong
-                console.log("User has only " + chances + " chance left")
+                // console.log("User has only " + chances + " chance left")
                 setChances(chances - 1)
               }
             }
@@ -171,7 +170,7 @@ function StoryElement() {
       newWordIndex[activeItem] = 0; // Reset the wordIndex for the current activeItem
       return newWordIndex;
     });
-    
+
   };
 
   const resetCurrentTranscript = () => {

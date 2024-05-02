@@ -7,34 +7,38 @@ audio::-webkit-media-controls-panel {
   padding: 20px;
 }
 
+/* .lucide{
+  color: rgb(83, 83, 176)
+} */
 
-span.black{
+.black{
   font-weight: normal;
   color: black;
 }
 
-span.red{
+.red{
   font-weight: 500;
   color: #ff6b6b;
   display: inline-block;
   padding-right: 8px;
   animation: skew-y-shake 0.5s;
-  text-decoration: underline dashed gray;
+  text-decoration: underline dashed #ff6b6b;
 }
 
-span.yellow{
+
+.yellow{
   font-weight: 400;
   color: #ffbc08;
   display: inline-block;
   padding-right: 8px;
   animation: skew-y-shake 1s infinite;
-  text-decoration: underline dashed gray;
+  text-decoration: underline dashed #ffbc08;
 }
 
-span.blue{
+.blue{
   font-weight: 500;
   color: cornflowerblue;
-  text-decoration: underline dashed gray;
+  text-decoration: underline dashed #90d618;
 }
 
 @keyframes skew-y-shake {
