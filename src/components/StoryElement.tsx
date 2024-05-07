@@ -14,7 +14,7 @@ function StoryElement() {
   // const params = useParams();
   // console.log(params.storyId);
   const [storyData, setStoryData] = useState<PoemData[]>([]);
-  const [language, setLanguage] = useState("en-US");
+  const [language, setLanguage] = useState("en-IN");
   const [activeItem, setActiveItem] = useState(0);
   const [transcripts, setTranscript] = useState<string[]>([]);
   const [actualSentences, setActualSentences] = useState<{ word: string; class: string; readFlag: boolean }[][]>([]);
@@ -25,7 +25,7 @@ function StoryElement() {
   useEffect(() => {
     const fetchStoryData = async () => {
       try {
-        const module = await import(`../assets/${language}.json`);
+        const module = await import(`../assets/${language.slice()}.json`);
         setStoryData(module.default);
       } catch (error) {
         console.error("Error fetching story data:", error);
@@ -179,6 +179,13 @@ function StoryElement() {
         ref={childRef}
       />
       <div id="animation-carousel" className="relative w-full mt-8" data-carousel="static">
+        <div className="mt-12 -mb-16">
+          {transcripts[activeItem] && (
+            <p className="w-[1000px] text-nowrap px-4 overflow-hidden mx-auto text-xl mt-6 p-2 bg-[#e9f3f4] rounded-full font-medium text-center text-[#007c84]">
+              {transcripts[activeItem]}
+            </p>
+          )}
+        </div>
         <div className="relative rounded-lg h-full w-screen overflow-hidden">
           {actualSentences.map((actualSentence, index) => (
             <div
@@ -235,11 +242,6 @@ function StoryElement() {
           />
         </button>
       </div>
-      {transcripts[activeItem] && (
-        <p className="w-[1000px] text-nowrap px-4 overflow-hidden mx-auto text-xl mt-6 p-2 bg-[#e9f3f4] rounded-full font-medium text-center text-[#007c84]">
-          {transcripts[activeItem]}
-        </p>
-      )}
     </>
   );
 }
