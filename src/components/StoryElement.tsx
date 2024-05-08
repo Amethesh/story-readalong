@@ -17,10 +17,12 @@ function StoryElement() {
   const [language, setLanguage] = useState("en-IN");
   const [activeItem, setActiveItem] = useState(0);
   const [transcripts, setTranscript] = useState<string[]>([]);
-  const [actualSentences, setActualSentences] = useState<{ word: string; class: string; readFlag: boolean }[][]>([]);
+  const [actualSentences, setActualSentences] = useState<
+    { word: string; class: string; readFlag: boolean }[][]
+  >([]);
   const [chances, setChances] = useState<number>(3);
   const [wordIndex, setWordIndex] = useState<number>(0);
-  let wordMispelled = false
+  let wordMispelled = false;
 
   useEffect(() => {
     const fetchStoryData = async () => {
@@ -37,12 +39,12 @@ function StoryElement() {
 
   const nextItem = () => {
     setActiveItem((prevItem) => (prevItem === storyData.length - 1 ? 0 : prevItem + 1));
-    setWordIndex(0)
+    setWordIndex(0);
   };
-  
+
   const prevItem = () => {
     setActiveItem((prevItem) => (prevItem === 0 ? storyData.length - 1 : prevItem - 1));
-    setWordIndex(0)
+    setWordIndex(0);
   };
   const goToItem = (index: number) => {
     setActiveItem(index);
@@ -77,70 +79,89 @@ function StoryElement() {
     if (transcripts && transcripts[activeItem]) {
       const transcript = transcripts[activeItem].split(" ");
       if (!wordMispelled) {
-        setChances(3)
+        setChances(3);
       }
       // let wordIndex = 0
       if (wordIndex < actualSentences[activeItem].length) {
-
         const currentElement = transcript[transcript.length - 1];
         // console.log(currentElement)
 
-        if (currentElement.toLocaleLowerCase() === actualSentences[activeItem][wordIndex].word.replace(/[".,:'";\-_ 0-9]/g, "").toLocaleLowerCase()) {
-
+        if (
+          currentElement.toLocaleLowerCase() ===
+          actualSentences[activeItem][wordIndex].word
+            .replace(/[".,:'";\-_ 0-9]/g, "")
+            .toLocaleLowerCase()
+        ) {
           // console.log("Current word spoken is matching with the existing current word")
 
           // change colour to blue
           const tempSentences = [...actualSentences];
-          tempSentences[activeItem][wordIndex] = { ...tempSentences[activeItem][wordIndex], class: "blue" , readFlag: true};
+          tempSentences[activeItem][wordIndex] = {
+            ...tempSentences[activeItem][wordIndex],
+            class: "blue",
+            readFlag: true
+          };
           setActualSentences(tempSentences);
-          
 
           //go to the next actual sentence.
-          setWordIndex(wordIndex + 1)
-
-        }
-        else {
+          setWordIndex(wordIndex + 1);
+        } else {
           // console.log("Current word spoken is not matching with the actual sentence")
           const tempSentences = [...actualSentences];
-          tempSentences[activeItem][wordIndex] = { ...tempSentences[activeItem][wordIndex], class: "yellow", readFlag: true};
+          tempSentences[activeItem][wordIndex] = {
+            ...tempSentences[activeItem][wordIndex],
+            class: "yellow",
+            readFlag: true
+          };
           setActualSentences(tempSentences);
 
           if (chances >= 0) {
             // setWordMispelled(true)
-            wordMispelled = true
+            wordMispelled = true;
             if (chances == 0) {
               // console.log("the element can no longer considered for reading.")
               const tempSentences = [...actualSentences];
-              tempSentences[activeItem][wordIndex] = { ...tempSentences[activeItem][wordIndex], class: "red", readFlag: true };
+              tempSentences[activeItem][wordIndex] = {
+                ...tempSentences[activeItem][wordIndex],
+                class: "red",
+                readFlag: true
+              };
               setActualSentences(tempSentences);
-              setWordIndex(wordIndex + 1)
+              setWordIndex(wordIndex + 1);
               // setWordMispelled(false)
-              wordMispelled = false
-            }
-            else {
+              wordMispelled = false;
+            } else {
               const currentElement = transcript[transcript.length - 1];
-              if (currentElement.toLocaleLowerCase() === actualSentences[activeItem][wordIndex].word.replace(/[".,:'";\-_ 0-9]/g, "").toLocaleLowerCase()) {
+              if (
+                currentElement.toLocaleLowerCase() ===
+                actualSentences[activeItem][wordIndex].word
+                  .replace(/[".,:'";\-_ 0-9]/g, "")
+                  .toLocaleLowerCase()
+              ) {
                 // console.log("Current word spoken is matching with the existing current word")
                 // change colour to blue
                 const tempSentences = [...actualSentences];
-                tempSentences[activeItem][wordIndex] = { ...tempSentences[activeItem][wordIndex], class: "blue", readFlag: true };
+                tempSentences[activeItem][wordIndex] = {
+                  ...tempSentences[activeItem][wordIndex],
+                  class: "blue",
+                  readFlag: true
+                };
                 setActualSentences(tempSentences);
                 //go to the next actual sentence.
-                setWordIndex(wordIndex + 1)
+                setWordIndex(wordIndex + 1);
                 // setWordMispelled(false)
-                wordMispelled = false
-              }
-              else {
+                wordMispelled = false;
+              } else {
                 //even now the word is wrong
                 // console.log("User has only " + chances + " chance left")
-                setChances(chances - 1)
+                setChances(chances - 1);
               }
             }
           }
         }
       }
     }
-  }, [transcripts])
+  }, [transcripts]);
 
   const resetStory = () => {
     const sentences = [...actualSentences];
@@ -156,7 +177,7 @@ function StoryElement() {
       });
     setActualSentences(sentences);
     resetCurrentTranscript();
-    setWordIndex(0)
+    setWordIndex(0);
   };
 
   const resetCurrentTranscript = () => {
@@ -179,18 +200,19 @@ function StoryElement() {
         ref={childRef}
       />
       <div id="animation-carousel" className="relative w-full mt-8" data-carousel="static">
-        <div className="mt-12 -mb-16">
+        <div className="my-4">
           {transcripts[activeItem] && (
             <p className="w-[1000px] text-nowrap px-4 overflow-hidden mx-auto text-xl mt-6 p-2 bg-[#e9f3f4] rounded-full font-medium text-center text-[#007c84]">
               {transcripts[activeItem]}
             </p>
           )}
         </div>
-        <div className="relative rounded-lg h-full w-screen overflow-hidden">
+        <div className="rounded-lg h-full w-screen overflow-hidden">
           {actualSentences.map((actualSentence, index) => (
             <div
-              className={`${activeItem === index ? "" : "hidden"
-                } transition-all duration-200 ease-linear flex justify-center gap-8 h-full items-center`}
+              className={`${
+                activeItem === index ? "" : "hidden"
+              } transition-all duration-200 ease-linear flex justify-center gap-8 h-full items-center`}
               data-carousel-item={activeItem === index ? "active" : null}
               key={index}
               style={{ left: `${index * 100}%` }}
@@ -203,13 +225,14 @@ function StoryElement() {
             </div>
           ))}
         </div>
-        <div className="absolute z-30 flex  -translate-x-1/2 space-x-3 rtl:space-x-reverse left-1/2">
+        <div className="absolute z-30 flex mt-8 -translate-x-1/2 space-x-3 rtl:space-x-reverse left-1/2">
           {storyData.map((poem, index) => (
             <button
               key={poem.poem.length}
               type="button"
-              className={`w-3 h-3 rounded-full ${activeItem === index ? "bg-[#289197]" : "bg-[#e9f3f4]"
-                } focus:outline-none`}
+              className={`w-3 h-3 rounded-full ${
+                activeItem === index ? "bg-[#289197]" : "bg-[#e9f3f4]"
+              } focus:outline-none`}
               aria-current={activeItem === index ? "true" : "false"}
               aria-label={`Slide ${index + 1}`}
               data-carousel-slide-to={index}
