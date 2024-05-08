@@ -198,15 +198,9 @@ function StoryElement() {
         language={language}
         setLanguage={setLanguage}
         ref={childRef}
+        transcripts={transcripts}
       />
       <div id="animation-carousel" className="relative w-full mt-8" data-carousel="static">
-        <div className="my-4">
-          {transcripts[activeItem] && (
-            <p className="w-[1000px] text-nowrap px-4 overflow-hidden mx-auto text-xl mt-6 p-2 bg-[#e9f3f4] rounded-full font-medium text-center text-[#007c84]">
-              {transcripts[activeItem]}
-            </p>
-          )}
-        </div>
         <div className="rounded-lg h-full w-screen overflow-hidden">
           {actualSentences.map((actualSentence, index) => (
             <div

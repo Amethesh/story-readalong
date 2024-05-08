@@ -18,33 +18,33 @@ interface SpeechProps {
   activeItem: number;
   language: string;
   setLanguage: React.Dispatch<React.SetStateAction<string>>;
+  transcripts: string[];
 }
 
 const Speech = forwardRef((props: SpeechProps, ref: ForwardedRef<unknown>) => {
   const { transcript, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
 
   useImperativeHandle(ref, () => {
-    if(browserSupportsSpeechRecognition){
+    if (browserSupportsSpeechRecognition) {
       return {
         resetTranscript: resetTranscript,
         pauseListening: pauseListening
       };
     }
   });
-  
+
   const [play, setPlay] = useState(true);
   const { startRecording, stopRecording, recordingBlob } = useAudioRecorder();
-  const [audioURL, setAudioURL] = useState<string | null>(null);
-  const [languageChanged, setLanguageChanged] = useState(false); // Track if language is changed
-
-  if (!browserSupportsSpeechRecognition) {
-    return <BrowserNotSupport />;
-  }
+  const [audioURLs, setAudioURLs] = useState<(string | undefined)[]>(Array(5).fill(null)); // Array to hold audio URLs for each active item
 
   useEffect(() => {
     if (recordingBlob) {
       const newURL = URL.createObjectURL(recordingBlob);
-      setAudioURL(newURL);
+      setAudioURLs((prevAudioURLs) => {
+        const newAudioURLs = [...prevAudioURLs];
+        newAudioURLs[props.activeItem] = newURL; // Store recording blob URL for the active item
+        return newAudioURLs;
+      });
     }
   }, [recordingBlob]);
 
@@ -56,17 +56,20 @@ const Speech = forwardRef((props: SpeechProps, ref: ForwardedRef<unknown>) => {
     });
   }, [transcript]);
 
+  if (!browserSupportsSpeechRecognition) {
+    return <BrowserNotSupport />;
+  }
+
   const keepListening = () => {
-    console.log(props.language)
+    console.log(props.language);
     SpeechRecognition.startListening({ continuous: true, language: props.language });
     startRecording();
     setPlay(false);
-    setLanguageChanged(false); // Reset language change flag when starting recording
   };
 
   const pauseListening = () => {
     SpeechRecognition.stopListening();
-    console.log("Paused!!!!!")
+    console.log("Paused!!!!!");
     stopRecording();
     setPlay(true);
   };
@@ -74,26 +77,35 @@ const Speech = forwardRef((props: SpeechProps, ref: ForwardedRef<unknown>) => {
   const resetListening = () => {
     resetTranscript();
     props.resetStory();
-    setAudioURL(null); // Clear recorded audio
-
+    setAudioURLs((prevAudioURLs) => {
+      const newAudioURLs = [...prevAudioURLs];
+      newAudioURLs[props.activeItem] = undefined; // Clear recorded audio for the active item
+      return newAudioURLs;
+    });
   };
 
   const handleChangeLanguage = (lang: string) => {
-    console.log("lang:", lang)
-    props.setLanguage(lang)
-    setLanguageChanged(true); // Set language changed to true
+    console.log("lang:", lang);
+    props.setLanguage(lang);
     pauseListening();
     resetListening();
-  }
+  };
 
   return (
-    <div className="flex gap-4 justify-end items-center w-full pr-16">
-      {audioURL && !languageChanged && <audio src={audioURL} controls />} {/* Render audio only if there's an audioURL and language is not changed */}
+    <div className="flex gap-4 justify-end items-center w-full px-12">
+      {props.transcripts[props.activeItem] && (
+        <p className="w-[1000px] text-nowrap px-4 overflow-hidden text-xl p-2 bg-[#e9f3f4] rounded-full font-medium text-center text-[#007c84]">
+          {props.transcripts[props.activeItem]}
+        </p>
+      )}
+      {audioURLs[props.activeItem] && ( // Display audio for the active item
+        <audio src={audioURLs[props.activeItem]} controls />
+      )}
       <RefreshCcw
         className="w-12 h-12 bg-[#e9f3f4] p-2 rounded-full text-[#007c84] shadow-md cursor-pointer"
         onClick={resetListening}
       />
-      {(play) ? (
+      {play ? (
         <MicOffIcon
           className="w-12 h-12 text-[#e9f3f4] p-2 rounded-full bg-[#007c84] shadow-md cursor-pointer"
           onClick={keepListening}
