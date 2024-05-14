@@ -1,4 +1,3 @@
-import { MicIcon, MicOffIcon, RefreshCcw } from "lucide-react";
 import React, { ForwardedRef, forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
 import BrowserNotSupport from "./BrowserNotSupport";
@@ -10,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue
 } from "./ui/select";
-// import AudioRecorderComponent from "./AudioRecord";
+import { RefreshCcw, MicIcon, MicOffIcon } from "lucide-react";
 import { useAudioRecorder } from "react-audio-voice-recorder";
 
 interface SpeechProps {
@@ -20,6 +19,7 @@ interface SpeechProps {
   language: string;
   setLanguage: React.Dispatch<React.SetStateAction<string>>;
 }
+
 const Speech = forwardRef((props: SpeechProps, ref: ForwardedRef<unknown>) => {
   const { transcript, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
 
@@ -35,6 +35,7 @@ const Speech = forwardRef((props: SpeechProps, ref: ForwardedRef<unknown>) => {
   const [play, setPlay] = useState(true);
   const { startRecording, stopRecording, recordingBlob } = useAudioRecorder();
   const [audioURL, setAudioURL] = useState<string | null>(null);
+  const [languageChanged, setLanguageChanged] = useState(false); // Track if language is changed
 
   if (!browserSupportsSpeechRecognition) {
     return <BrowserNotSupport />;
@@ -55,11 +56,12 @@ const Speech = forwardRef((props: SpeechProps, ref: ForwardedRef<unknown>) => {
     });
   }, [transcript]);
 
-  const keepListeneing = () => {
+  const keepListening = () => {
     console.log(props.language)
     SpeechRecognition.startListening({ continuous: true, language: props.language });
     startRecording();
     setPlay(false);
+    setLanguageChanged(false); // Reset language change flag when starting recording
   };
 
   const pauseListening = () => {
@@ -72,26 +74,29 @@ const Speech = forwardRef((props: SpeechProps, ref: ForwardedRef<unknown>) => {
   const resetListening = () => {
     resetTranscript();
     props.resetStory();
+    setAudioURL(null); // Clear recorded audio
+
   };
 
   const handleChangeLanguage = (lang: string) => {
     console.log("lang:", lang)
     props.setLanguage(lang)
-    pauseListening()
-    resetListening()
+    setLanguageChanged(true); // Set language changed to true
+    pauseListening();
+    resetListening();
   }
 
   return (
     <div className="flex gap-4 justify-end items-center w-full pr-16">
-      {audioURL && <audio src={audioURL} controls />}
+      {audioURL && !languageChanged && <audio src={audioURL} controls />} {/* Render audio only if there's an audioURL and language is not changed */}
       <RefreshCcw
         className="w-12 h-12 bg-[#e9f3f4] p-2 rounded-full text-[#007c84] shadow-md cursor-pointer"
         onClick={resetListening}
       />
-      {play ? (
+      {(play) ? (
         <MicOffIcon
           className="w-12 h-12 text-[#e9f3f4] p-2 rounded-full bg-[#007c84] shadow-md cursor-pointer"
-          onClick={keepListeneing}
+          onClick={keepListening}
         />
       ) : (
         <MicIcon
@@ -120,7 +125,6 @@ const Speech = forwardRef((props: SpeechProps, ref: ForwardedRef<unknown>) => {
           </SelectGroup>
         </SelectContent>
       </Select>
-      {/* <AudioRecorderComponent /> */}
     </div>
   );
 });

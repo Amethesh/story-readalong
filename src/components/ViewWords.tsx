@@ -20,7 +20,7 @@ const ViewWords = (props: ViewWordsProps) => {
     speechSynthesis.speak(word)
   }
   return (
-    <div className="flex justify-center gap-8 h-full items-center px-32">
+    <div className="flex justify-center gap-8 h-screen items-center px-32">
       <img
         src={props.image}
         className="rounded-lg object-cover w-[500px] h-[500px] shadow-xl border"
