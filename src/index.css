@@ -7,12 +7,16 @@ audio::-webkit-media-controls-panel {
   padding: 20px;
 }
 
-.black{
+/* .lucide{
+  color: rgb(83, 83, 176)
+} */
+
+.black {
   font-weight: normal;
   color: black;
 }
 
-.red{
+.red {
   font-weight: 500;
   color: #ff6b6b;
   display: inline-block;
@@ -21,8 +25,7 @@ audio::-webkit-media-controls-panel {
   text-decoration: underline dashed #ff6b6b;
 }
 
-
-.yellow{
+.yellow {
   font-weight: 400;
   color: #ffbc08;
   display: inline-block;
@@ -37,21 +40,32 @@ audio::-webkit-media-controls-panel {
   box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;;
 }
 
-.blue{
+.blue {
   font-weight: 500;
   color: cornflowerblue;
   text-decoration: underline dashed #90d618;
 }
 
 @keyframes skew-y-shake {
-  0% { transform: skewY(-15deg); }
-  5% { transform: skewY(15deg); }
-  10% { transform: skewY(-15deg); }
-  15% { transform: skewY(1deg); }
-  20% { transform: skewY(0deg); }
-  100% { transform: skewY(0deg); }  
+  0% {
+    transform: skewY(-15deg);
+  }
+  5% {
+    transform: skewY(15deg);
+  }
+  10% {
+    transform: skewY(-15deg);
+  }
+  15% {
+    transform: skewY(1deg);
+  }
+  20% {
+    transform: skewY(0deg);
+  }
+  100% {
+    transform: skewY(0deg);
+  }
 }
-
 
 @layer base {
   :root {
