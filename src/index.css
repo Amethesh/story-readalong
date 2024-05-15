@@ -7,9 +7,10 @@ audio::-webkit-media-controls-panel {
   padding: 20px;
 }
 
-/* .lucide{
-  color: rgb(83, 83, 176)
-} */
+body{
+  background-color: #f0eee2;
+  font-family: "Roboto Slab", serif;
+}
 
 .black {
   font-weight: normal;

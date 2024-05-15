@@ -27,12 +27,12 @@ const AudioRecorderComponent = () => {
     <div>
       {isRecording ? (
         <MicOffIcon
-          className="w-12 h-12 text-[#e9f3f4] p-2 rounded-full bg-[#007c84] shadow-md cursor-pointer"
+          className="w-12 h-12 text-[#e9f3f4] p-2 rounded-full bg-[#e85e65] shadow-md cursor-pointer"
           onClick={handleRecordClick}
         />
       ) : (
         <MicIcon
-          className="w-12 h-12 text-[#e9f3f4] p-2 rounded-full bg-[#007c84] cursor-pointer"
+          className="w-12 h-12 text-[#e9f3f4] p-2 rounded-full bg-[#e85e65] cursor-pointer"
           onClick={handleRecordClick}
         />
       )}

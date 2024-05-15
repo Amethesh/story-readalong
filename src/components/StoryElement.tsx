@@ -1,7 +1,6 @@
 import Navbar from "./Navbar";
 import Speech from "./SpeechNew";
 import { useEffect, useRef, useState } from "react";
-import ViewWords from "./ViewWords";
 import { ChevronLeftIcon, ChevronRightIcon, Volume2 } from "lucide-react";
 import HTMLFlipBook from "react-pageflip";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
@@ -214,21 +213,6 @@ function StoryElement() {
       />
       <div id="animation-carousel" className="relative w-full mt-8" data-carousel="static">
         <div className="h-full w-screen overflow-hidden flex justify-center">
-          {/* <div
-                className={`${
-                  activeItem === index ? "" : "hidden"
-                } transition-all duration-200 ease-linear flex justify-center gap-8 h-full items-center`}
-                data-carousel-item={activeItem === index ? "active" : null}
-                key={index}
-                style={{ left: `${index * 100}%` }}
-                >
-                <ViewWords
-                key={index}
-                actualSentence={actualSentence}
-                image={storyData[index].image}
-                />
-              </div>
-            */}
           <HTMLFlipBook
             width={800}
             height={650}
@@ -237,7 +221,7 @@ function StoryElement() {
             maxShadowOpacity={0.6}
             size="stretch"
             mobileScrollSupport={true}
-            className="h-full mx-32 p-4 m-2 bg-slate-200"
+            className="mx-32 my-4 bg-[#fcfbf6] border-2 border-black/20 rounded-lg shadow-lg z-50"
           >
             {actualSentences.map((actualSentence, index) => {
               // innerIndex++; // Increment innerIndex
@@ -246,14 +230,13 @@ function StoryElement() {
                   {index % 2 === 0 ? (
                     <img
                       src={storyData[index].image}
-                      className="rounded-lg object-cover w-full  h-full border p-6"
-                      alt=""
+                      className="rounded-lg object-cover w-full h-full border-2 p-6 bg-[#edeae1]"
+                      alt="Main Image"
                     />
                   ) : (
-                    <div className="text-[40px] m-8 bg-slate-200 w-full h-full">
+                    <div className="my-auto text-[50px] px-8 pt-32 bg-[#fcfbf6] w-full h-full rounded-lg">
                       <p className="hidden">{innerIndex++}</p>
-                      {actualSentences[innerIndex].map((data) => {
-                        return (
+                      {actualSentences[innerIndex].map((data) => (
                           <HoverCard key={innerIndex}>
                             <HoverCardTrigger>
                               <span className={data.class}>{data.word + " "}</span>
@@ -279,8 +262,8 @@ function StoryElement() {
                               </HoverCardContent>
                             )}
                           </HoverCard>
-                        );
-                      })}
+                        )
+                      )}
                     </div>
                   )}
                 </div>
@@ -312,7 +295,7 @@ function StoryElement() {
         >
           <ChevronLeftIcon
             size={60}
-            stroke="#007c84"
+            stroke="#e85e65"
             className="bg-[#e9f3f4] rounded-r-full p-1 shadow-md"
           />
         </button>
@@ -324,7 +307,7 @@ function StoryElement() {
         >
           <ChevronRightIcon
             size={60}
-            stroke="#007c84"
+            stroke="#e85e65"
             className="bg-[#e9f3f4] rounded-l-full p-1 shadow-md"
           />
         </button>

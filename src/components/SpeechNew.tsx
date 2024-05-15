@@ -94,7 +94,7 @@ const Speech = forwardRef((props: SpeechProps, ref: ForwardedRef<unknown>) => {
   return (
     <div className="flex gap-4 justify-end items-center w-full px-12">
       {props.transcripts[props.activeItem] && (
-        <p className="w-[1000px] text-nowrap px-4 overflow-hidden text-xl p-2 bg-[#e9f3f4] rounded-full font-medium text-center text-[#007c84]">
+        <p className="w-[1000px] text-nowrap px-4 overflow-hidden text-xl p-2 bg-[#e9f3f4] rounded-full font-medium text-center text-[#e85e65]">
           {props.transcripts[props.activeItem]}
         </p>
       )}
@@ -102,36 +102,36 @@ const Speech = forwardRef((props: SpeechProps, ref: ForwardedRef<unknown>) => {
         <audio src={audioURLs[props.activeItem]} controls />
       )}
       <RefreshCcw
-        className="w-12 h-12 bg-[#e9f3f4] p-2 rounded-full text-[#007c84] shadow-md cursor-pointer"
+        className="w-12 h-12 bg-[#e9f3f4] p-2 rounded-full text-[#e85e65] shadow-md cursor-pointer"
         onClick={resetListening}
       />
       {play ? (
         <MicOffIcon
-          className="w-12 h-12 text-[#e9f3f4] p-2 rounded-full bg-[#007c84] shadow-md cursor-pointer"
+          className="w-12 h-12 text-[#e9f3f4] p-2 rounded-full bg-[#e85e65] shadow-md cursor-pointer"
           onClick={keepListening}
         />
       ) : (
         <MicIcon
-          className="w-12 h-12 text-[#e9f3f4] p-2 rounded-full bg-[#007c84] cursor-pointer"
+          className="w-12 h-12 text-[#e9f3f4] p-2 rounded-full bg-[#e85e65] cursor-pointer"
           onClick={pauseListening}
         />
       )}
       <Select defaultValue="en-IN" onValueChange={(value: string) => handleChangeLanguage(value)}>
-        <SelectTrigger className="w-[180px] h-full bg-[#e9f3f4] border-0 text-[#007c84] font-medium">
+        <SelectTrigger className="w-[180px] h-full bg-[#e9f3f4] border-0 text-[#e85e65] font-medium">
           <SelectValue placeholder="Select a language" />
         </SelectTrigger>
         <SelectContent className="bg-[#e9f3f4]">
           <SelectGroup>
-            <SelectItem className="text-[#007c84]" value="ta-IN">
+            <SelectItem className="text-[#e85e65]" value="ta-IN">
               Tamil
             </SelectItem>
-            <SelectItem className="text-[#007c84]" value="en-IN">
+            <SelectItem className="text-[#e85e65]" value="en-IN">
               English
             </SelectItem>
-            <SelectItem className="text-[#007c84]" value="hi-IN">
+            <SelectItem className="text-[#e85e65]" value="hi-IN">
               Hindi
             </SelectItem>
-            <SelectItem className="text-[#007c84]" value="jp-JP">
+            <SelectItem className="text-[#e85e65]" value="jp-JP">
               Japanese
             </SelectItem>
           </SelectGroup>
