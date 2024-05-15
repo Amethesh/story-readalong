@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { ChevronLeftIcon, ChevronRightIcon, Volume2 } from "lucide-react";
 import HTMLFlipBook from "react-pageflip";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
+import ViewWords from "./ViewWords";
 
 type PoemData = {
   poem: string;
@@ -212,7 +213,7 @@ function StoryElement() {
         transcripts={transcripts}
       />
       <div id="animation-carousel" className="relative w-full mt-8" data-carousel="static">
-        <div className="h-full w-screen overflow-hidden flex justify-center">
+        {/* <div className="h-full w-screen overflow-hidden flex justify-center">
           <HTMLFlipBook
             width={800}
             height={650}
@@ -270,15 +271,31 @@ function StoryElement() {
               );
             })}
           </HTMLFlipBook>
+        </div> */}
+        <div className="rounded-lg h-full w-max overflow-hidden">
+          {actualSentences.map((actualSentence, index) => (
+            <div
+              className={`${activeItem === index ? "" : "hidden"
+                } transition-all duration-200 ease-linear flex justify-center gap-8 overflow-hidden h-full items-center`}
+              data-carousel-item={activeItem === index ? "active" : null}
+              key={index}
+              style={{ left: `${index * 100}%` }}
+            >
+              <ViewWords
+                key={index}
+                actualSentence={actualSentence}
+                image={storyData[index].image}
+              />
+            </div>
+          ))}
         </div>
-
         <div className="absolute z-30 flex mt-8 -translate-x-1/2 space-x-3 rtl:space-x-reverse left-1/2">
           {storyData.map((poem, index) => (
             <button
               key={poem.poem.length}
               type="button"
-              className={`w-3 h-3 rounded-full ${
-                activeItem === index ? "bg-[#289197]" : "bg-[#e9f3f4]"
+              className={`w-4 h-4 rounded-full ${
+                activeItem === index ? "bg-[#e85e65]" : "bg-[#fcfbf6]"
               } focus:outline-none`}
               aria-current={activeItem === index ? "true" : "false"}
               aria-label={`Slide ${index + 1}`}
