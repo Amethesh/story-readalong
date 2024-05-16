@@ -17,13 +17,13 @@ const ViewWords = (props: ViewWordsProps) => {
     speechSynthesis.speak(word);
   };
   return (
-    <div className="flex justify-center gap-4 items-center h-full px-32">
-      <img
-        src={props.image}
-        className="rounded-lg object-cover w-[500px] h-[500px] shadow-xl border"
-        alt=""
-      />
-      <div className="text-[40px] m-8">
+    // // <div className="flex justify-center gap-4 items-center h-full px-32">
+    //   {/* <img
+    //     src={props.image}
+    //     className="rounded-lg object-cover w-[500px] h-[500px] shadow-xl border"
+    //     alt=""
+    //   /> */}
+      <p className="text-[40px] m-8 bg-[#fcfbf6]">
         {props.actualSentence.map((data, index) => (
           <HoverCard>
             <HoverCardTrigger>
@@ -54,8 +54,7 @@ const ViewWords = (props: ViewWordsProps) => {
             )}
           </HoverCard>
         ))}
-      </div>
-    </div>
+      </p>
   );
 };
 

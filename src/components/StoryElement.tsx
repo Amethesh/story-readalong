@@ -1,9 +1,11 @@
 import Navbar from "./Navbar";
 import Speech from "./SpeechNew";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ChevronLeftIcon, ChevronRightIcon, Volume2 } from "lucide-react";
 import HTMLFlipBook from "react-pageflip";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
+import ViewWords from "./ViewWords";
+import Test from "./test";
 
 type PoemData = {
   poem: string;
@@ -51,6 +53,7 @@ function StoryElement() {
     resetStory();
   };
 
+  const [alternateElements, setAlternateElements] = useState<JSX.Element[]>([]);
   useEffect(() => {
     console.log("INSIDE ACTIVEITEM");
     const sentences = storyData.map((poem) =>
@@ -67,8 +70,56 @@ function StoryElement() {
     );
     console.log(sentences);
     setActualSentences(sentences);
-    setWordIndex(Array(storyData.length).fill(0));
+    console.log(actualSentences)
+    // setWordIndex(Array(storyData.length).fill(0));
+    
   }, [storyData]);
+
+  useEffect(()=> {
+    const newAlternateElements = [];
+    for (let i = 0; i < storyData.length; i++) {
+      const item = storyData[i];
+      newAlternateElements.push(
+        <img key={`img${i}`} src={item.image} alt="poem"
+        className="rounded-lg object-cover w-[500px] h-[500px] shadow-xl border"
+    />,
+        <p key={`poem${i}`} className="text-[40px] p-4 rounded-lg bg-[#fcfbf6]">
+          {actualSentences[i] && actualSentences[i].map((data, index) => (
+            <HoverCard>
+            <HoverCardTrigger>
+              <span key={index} className={data.class}>
+                {data.word + " "}
+              </span>
+            </HoverCardTrigger>
+
+            {data.readFlag ? (
+              <HoverCardContent>
+                <div className="flex justify-evenly gap-7">
+                  <p className={data.class}>{data.word}</p>
+                  <Volume2
+                    size={36}
+                    strokeWidth={2.25}
+                    color={"#785153"}
+                    // onClick={() => {
+                    //   handleTextToSpeech(data.word);
+                    // }}
+                    className="mt-4"
+                  />
+                </div>
+              </HoverCardContent>
+            ) : (
+              <HoverCardContent>
+                <p className={data.class}>{data.word}</p>
+              </HoverCardContent>
+            )}
+          </HoverCard>
+          ))}
+        </p>
+
+      );
+    }
+    setAlternateElements(newAlternateElements);
+  },[actualSentences])
 
   const childRef = useRef();
 
@@ -188,17 +239,12 @@ function StoryElement() {
     });
   };
 
-  const handleTextToSpeech = (text: string) => {
-    const word = new SpeechSynthesisUtterance(text);
-    const voices = speechSynthesis.getVoices();
+  const handleFlip = (e) => {
+    setActiveItem((e.data)/2)
+    setWordIndex(0)
+    console.log(e.data)
+  }
 
-    word.voice = voices[10];
-    console.log(speechSynthesis.getVoices());
-
-    word.lang = "en-IN";
-    speechSynthesis.speak(word);
-  };
-  let innerIndex = -1;
   return (
     <>
       <Navbar />
@@ -219,67 +265,41 @@ function StoryElement() {
             minWidth={0}
             minHeight={0}
             maxShadowOpacity={0.6}
+            onFlip={handleFlip}
             size="stretch"
             mobileScrollSupport={true}
             className="mx-32 my-4 bg-[#fcfbf6] border-2 border-black/20 rounded-lg shadow-lg z-50"
           >
-            {actualSentences.map((actualSentence, index) => {
-              // innerIndex++; // Increment innerIndex
-              return (
-                <div key={index}>
-                  {index % 2 === 0 ? (
-                    <img
-                      src={storyData[index].image}
-                      className="rounded-lg object-cover w-full h-full border-2 p-6 bg-[#edeae1]"
-                      alt="Main Image"
-                    />
-                  ) : (
-                    <div className="my-auto text-[50px] px-8 pt-32 bg-[#fcfbf6] w-full h-full rounded-lg">
-                      <p className="hidden">{innerIndex++}</p>
-                      {actualSentences[innerIndex].map((data) => (
-                          <HoverCard key={innerIndex}>
-                            <HoverCardTrigger>
-                              <span className={data.class}>{data.word + " "}</span>
-                            </HoverCardTrigger>
-                            {data.readFlag ? (
-                              <HoverCardContent>
-                                <div className="flex justify-evenly gap-7">
-                                  <p className={data.class}>{data.word}</p>
-                                  <Volume2
-                                    size={36}
-                                    strokeWidth={2.25}
-                                    color={"#785153"}
-                                    onClick={() => {
-                                      handleTextToSpeech(data.word);
-                                    }}
-                                    className="mt-4"
-                                  />
-                                </div>
-                              </HoverCardContent>
-                            ) : (
-                              <HoverCardContent>
-                                <p className={data.class}>{data.word}</p>
-                              </HoverCardContent>
-                            )}
-                          </HoverCard>
-                        )
-                      )}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+            {/* {actualSentences.map((actualSentence, index) => (
+              <div
+                className={`${activeItem === index ? "" : "hidden"
+                  } transition-all duration-200 ease-linear flex justify-center gap-8 overflow-hidden h-full items-center`}
+                data-carousel-item={activeItem === index ? "active" : null}
+                key={index}
+                style={{ left: `${index * 100}%` }}
+                // data-density="hard"
+              >
+              <ViewWords
+              key={index}
+              actualSentence={actualSentence}
+              image={storyData[index].image}
+              />
+              </div>
+            ))} */}
+            
+
+            {alternateElements}
+
           </HTMLFlipBook>
         </div>
-
+        {/* <Test /> */}
         <div className="absolute z-30 flex mt-8 -translate-x-1/2 space-x-3 rtl:space-x-reverse left-1/2">
           {storyData.map((poem, index) => (
             <button
               key={poem.poem.length}
               type="button"
-              className={`w-3 h-3 rounded-full ${
-                activeItem === index ? "bg-[#289197]" : "bg-[#e9f3f4]"
-              } focus:outline-none`}
+              className={`w-3 h-3 rounded-full ${activeItem === index ? "bg-[#289197]" : "bg-[#e9f3f4]"
+                } focus:outline-none`}
               aria-current={activeItem === index ? "true" : "false"}
               aria-label={`Slide ${index + 1}`}
               data-carousel-slide-to={index}
@@ -287,7 +307,7 @@ function StoryElement() {
             ></button>
           ))}
         </div>
-        <button
+        {/* <button
           type="button"
           className="absolute top-0 start-0 z-30 flex items-center justify-center h-full cursor-pointer group focus:outline-none "
           data-carousel-prev
@@ -310,7 +330,7 @@ function StoryElement() {
             stroke="#e85e65"
             className="bg-[#e9f3f4] rounded-l-full p-1 shadow-md"
           />
-        </button>
+        </button> */}
       </div>
     </>
   );
