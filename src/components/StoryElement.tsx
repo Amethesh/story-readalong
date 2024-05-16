@@ -1,9 +1,7 @@
 import Navbar from "./Navbar";
 import Speech from "./SpeechNew";
 import { useEffect, useRef, useState } from "react";
-import { ChevronLeftIcon, ChevronRightIcon, Volume2 } from "lucide-react";
-import HTMLFlipBook from "react-pageflip";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import ViewWords from "./ViewWords";
 
 type PoemData = {
@@ -22,7 +20,7 @@ function StoryElement() {
     { word: string; class: string; readFlag: boolean }[][]
   >([]);
   const [chances, setChances] = useState<number>(3);
-  const [wordIndex, setWordIndex] = useState<number>(0);
+  const [wordIndex, setWordIndex] = useState<number[]>([]);
   let wordMispelled = false;
 
   useEffect(() => {
@@ -40,12 +38,12 @@ function StoryElement() {
 
   const nextItem = () => {
     setActiveItem((prevItem) => (prevItem === storyData.length - 1 ? 0 : prevItem + 1));
-    setWordIndex(0);
+    // setWordIndex(0);
   };
 
   const prevItem = () => {
     setActiveItem((prevItem) => (prevItem === 0 ? storyData.length - 1 : prevItem - 1));
-    setWordIndex(0);
+    // setWordIndex(0);
   };
   const goToItem = (index: number) => {
     setActiveItem(index);
@@ -83,13 +81,13 @@ function StoryElement() {
         setChances(3);
       }
       // let wordIndex = 0
-      if (wordIndex < actualSentences[activeItem].length) {
+      if (wordIndex[activeItem] < actualSentences[activeItem].length) {
         const currentElement = transcript[transcript.length - 1];
         // console.log(currentElement)
 
         if (
           currentElement.toLocaleLowerCase() ===
-          actualSentences[activeItem][wordIndex].word
+          actualSentences[activeItem][wordIndex[activeItem]].word
             .replace(/[".,:'";\-_ 0-9]/g, "")
             .toLocaleLowerCase()
         ) {
@@ -97,20 +95,25 @@ function StoryElement() {
 
           // change colour to blue
           const tempSentences = [...actualSentences];
-          tempSentences[activeItem][wordIndex] = {
-            ...tempSentences[activeItem][wordIndex],
+          tempSentences[activeItem][wordIndex[activeItem]] = {
+            ...tempSentences[activeItem][wordIndex[activeItem]],
             class: "blue",
             readFlag: true
           };
           setActualSentences(tempSentences);
 
           //go to the next actual sentence.
-          setWordIndex(wordIndex + 1);
+          // setWordIndex(wordIndex + 1);
+          setWordIndex(prevWordIndex => {
+            const newWordIndex = [...prevWordIndex];
+            newWordIndex[activeItem] = newWordIndex[activeItem]  + 1;
+            return newWordIndex;
+          });
         } else {
           // console.log("Current word spoken is not matching with the actual sentence")
           const tempSentences = [...actualSentences];
-          tempSentences[activeItem][wordIndex] = {
-            ...tempSentences[activeItem][wordIndex],
+          tempSentences[activeItem][wordIndex[activeItem]] = {
+            ...tempSentences[activeItem][wordIndex[activeItem]],
             class: "yellow",
             readFlag: true
           };
@@ -122,34 +125,46 @@ function StoryElement() {
             if (chances == 0) {
               // console.log("the element can no longer considered for reading.")
               const tempSentences = [...actualSentences];
-              tempSentences[activeItem][wordIndex] = {
-                ...tempSentences[activeItem][wordIndex],
+              tempSentences[activeItem][wordIndex[activeItem]] = {
+                ...tempSentences[activeItem][wordIndex[activeItem]],
                 class: "red",
                 readFlag: true
               };
               setActualSentences(tempSentences);
-              setWordIndex(wordIndex + 1);
+              // setWordIndex(wordIndex + 1);
+              // setWordIndex(prevWordIndex => [...prevWordIndex, prevWordIndex.length]);
+              setWordIndex(prevWordIndex => {
+                const newWordIndex = [...prevWordIndex];
+                newWordIndex[activeItem] = newWordIndex[activeItem]  + 1;
+                return newWordIndex;
+              });
+
               // setWordMispelled(false)
               wordMispelled = false;
             } else {
               const currentElement = transcript[transcript.length - 1];
               if (
                 currentElement.toLocaleLowerCase() ===
-                actualSentences[activeItem][wordIndex].word
+                actualSentences[activeItem][wordIndex[activeItem]].word
                   .replace(/[".,:'";\-_ 0-9]/g, "")
                   .toLocaleLowerCase()
               ) {
                 // console.log("Current word spoken is matching with the existing current word")
                 // change colour to blue
                 const tempSentences = [...actualSentences];
-                tempSentences[activeItem][wordIndex] = {
-                  ...tempSentences[activeItem][wordIndex],
+                tempSentences[activeItem][wordIndex[activeItem]] = {
+                  ...tempSentences[activeItem][wordIndex[activeItem]],
                   class: "blue",
                   readFlag: true
                 };
                 setActualSentences(tempSentences);
                 //go to the next actual sentence.
-                setWordIndex(wordIndex + 1);
+                // setWordIndex(wordIndex + 1);
+                setWordIndex(prevWordIndex => {
+                  const newWordIndex = [...prevWordIndex];
+                  newWordIndex[activeItem] = newWordIndex[activeItem]  + 1;
+                  return newWordIndex;
+                });
                 // setWordMispelled(false)
                 wordMispelled = false;
               } else {
@@ -178,7 +193,12 @@ function StoryElement() {
       });
     setActualSentences(sentences);
     resetCurrentTranscript();
-    setWordIndex(0);
+    // setWordIndex(0);
+    setWordIndex(prevWordIndex => {
+      const newWordIndex = [...prevWordIndex];
+      newWordIndex[activeItem] = 0;
+      return newWordIndex;
+    });
   };
 
   const resetCurrentTranscript = () => {
@@ -188,18 +208,7 @@ function StoryElement() {
       return newTranscript;
     });
   };
-
-  const handleTextToSpeech = (text: string) => {
-    const word = new SpeechSynthesisUtterance(text);
-    const voices = speechSynthesis.getVoices();
-
-    word.voice = voices[10];
-    console.log(speechSynthesis.getVoices());
-
-    word.lang = "en-IN";
-    speechSynthesis.speak(word);
-  };
-  let innerIndex = -1;
+  // let innerIndex = -1;
   return (
     <>
       <Navbar />
