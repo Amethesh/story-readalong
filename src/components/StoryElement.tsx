@@ -1,10 +1,9 @@
 import Navbar from "./Navbar";
 import Speech from "./SpeechNew";
 import { useEffect, useRef, useState } from "react";
-import { ChevronLeftIcon, ChevronRightIcon, Volume2 } from "lucide-react";
-import HTMLFlipBook from "react-pageflip";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import ViewWords from "./ViewWords";
+import Evaluation from "./Evaluation";
 
 type PoemData = {
   poem: string;
@@ -68,7 +67,7 @@ function StoryElement() {
     );
     console.log(sentences);
     setActualSentences(sentences);
-    setWordIndex(Array(storyData.length).fill(0));
+    // setWordIndex(Array(storyData.length).fill(0));
   }, [storyData]);
 
   const childRef = useRef();
@@ -213,65 +212,6 @@ function StoryElement() {
         transcripts={transcripts}
       />
       <div id="animation-carousel" className="relative w-full mt-8" data-carousel="static">
-        {/* <div className="h-full w-screen overflow-hidden flex justify-center">
-          <HTMLFlipBook
-            width={800}
-            height={650}
-            minWidth={0}
-            minHeight={0}
-            maxShadowOpacity={0.6}
-            size="stretch"
-            mobileScrollSupport={true}
-            className="mx-32 my-4 bg-[#fcfbf6] border-2 border-black/20 rounded-lg shadow-lg z-50"
-          >
-            {actualSentences.map((actualSentence, index) => {
-              // innerIndex++; // Increment innerIndex
-              return (
-                <div key={index}>
-                  {index % 2 === 0 ? (
-                    <img
-                      src={storyData[index].image}
-                      className="rounded-lg object-cover w-full h-full border-2 p-6 bg-[#edeae1]"
-                      alt="Main Image"
-                    />
-                  ) : (
-                    <div className="my-auto text-[50px] px-8 pt-32 bg-[#fcfbf6] w-full h-full rounded-lg">
-                      <p className="hidden">{innerIndex++}</p>
-                      {actualSentences[innerIndex].map((data) => (
-                          <HoverCard key={innerIndex}>
-                            <HoverCardTrigger>
-                              <span className={data.class}>{data.word + " "}</span>
-                            </HoverCardTrigger>
-                            {data.readFlag ? (
-                              <HoverCardContent>
-                                <div className="flex justify-evenly gap-7">
-                                  <p className={data.class}>{data.word}</p>
-                                  <Volume2
-                                    size={36}
-                                    strokeWidth={2.25}
-                                    color={"#785153"}
-                                    onClick={() => {
-                                      handleTextToSpeech(data.word);
-                                    }}
-                                    className="mt-4"
-                                  />
-                                </div>
-                              </HoverCardContent>
-                            ) : (
-                              <HoverCardContent>
-                                <p className={data.class}>{data.word}</p>
-                              </HoverCardContent>
-                            )}
-                          </HoverCard>
-                        )
-                      )}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </HTMLFlipBook>
-        </div> */}
         <div className="rounded-lg h-full w-max overflow-hidden">
           {actualSentences.map((actualSentence, index) => (
             <div
@@ -288,15 +228,15 @@ function StoryElement() {
               />
             </div>
           ))}
+        <Evaluation/>
         </div>
         <div className="absolute z-30 flex mt-8 -translate-x-1/2 space-x-3 rtl:space-x-reverse left-1/2">
           {storyData.map((poem, index) => (
             <button
               key={poem.poem.length}
               type="button"
-              className={`w-4 h-4 rounded-full ${
-                activeItem === index ? "bg-[#e85e65]" : "bg-[#fcfbf6]"
-              } focus:outline-none`}
+              className={`w-4 h-4 rounded-full ${activeItem === index ? "bg-[#e85e65]" : "bg-[#fcfbf6]"
+                } focus:outline-none`}
               aria-current={activeItem === index ? "true" : "false"}
               aria-label={`Slide ${index + 1}`}
               data-carousel-slide-to={index}

@@ -17,15 +17,6 @@ const ViewWords = (props: ViewWordsProps) => {
     word.lang = "ta-IN";
     speechSynthesis.speak(word);
   };
-  const [showImage, setShowImage] = useState(true);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowImage(false);
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, []);
 
   return (
     <div className="flex justify-center gap-4 items-center h-full mx-32 bg-[#fcfbf6] border-2 border-black/20 shadow-lg rounded-lg">
