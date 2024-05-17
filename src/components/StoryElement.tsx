@@ -83,36 +83,60 @@ function StoryElement() {
         <img key={`img${i}`} src={item.image} alt="poem"
           className="rounded-lg object-cover w-[500px] h-[500px] shadow-xl border"
         />,
-        <p key={`poem${i}`} className="text-[40px] p-4 rounded-lg bg-[#fcfbf6] h-full overflow-y-auto overflow-x-hidden">
+        <p key={`poem${i}`} className="text-[40px] p-4 rounded-lg bg-[#fcfbf6] h-full overflow-y-auto w-full">
           {actualSentences[i] && actualSentences[i].map((data, index) => (
-            <HoverCard>
-              <HoverCardTrigger>
-                <span key={index} className={data.class}>
-                  {data.word + " "}
-                </span>
-              </HoverCardTrigger>
-
-              {data.readFlag ? (
-                <HoverCardContent>
-                  <div className="flex justify-evenly gap-7">
-                    <p className={data.class}>{data.word}</p>
-                    <Volume2
+            // <HoverCard>
+            // <HoverCardTrigger >
+            <span key={index} className={`relative group cursor-pointer ${data.class}`}>
+              {data.word + " "}
+              <div className={`z-40 absolute left-1/2 transform -translate-x-1/2 top-full border mb-2 hidden group-hover:block bg-white rounded p-3 w-max`}>
+                {data.readFlag ? (
+                  <div className="z-50 flex justify-evenly gap-7">
+                    <p className="black"
+                      onMouseEnter={() => {
+                        handleTextToSpeech(data.word);
+                      }}
+                    >
+                      {data.word}
+                    </p>
+                    {/* <Volume2
                       size={36}
                       strokeWidth={2.25}
                       color={"#785153"}
-                      onClick={() => {
+                      onMouseEnter={() => {
                         handleTextToSpeech(data.word);
                       }}
                       className="mt-4"
-                    />
+                    /> */}
                   </div>
-                </HoverCardContent>
-              ) : (
-                <HoverCardContent>
+                ) : (
                   <p className={data.class}>{data.word}</p>
-                </HoverCardContent>
-              )}
-            </HoverCard>
+                )}
+              </div>
+            </span>
+            // </HoverCardTrigger>
+
+            //   {data.readFlag ? (
+            //     <HoverCardContent sticky="always">
+            //       <div className="flex justify-evenly gap-7">
+            //         <p className={data.class}>{data.word}</p>
+            //         <Volume2
+            //           size={36}
+            //           strokeWidth={2.25}
+            //           color={"#785153"}
+            //           onClick={() => {
+            //             handleTextToSpeech(data.word);
+            //           }}
+            //           className="mt-4"
+            //         />
+            //       </div>
+            //     </HoverCardContent>
+            //   ) : (
+            //     <HoverCardContent sideOffset={90}>
+            //       <p className={data.class}>{data.word}</p>
+            //     </HoverCardContent>
+            //   )}
+            // </HoverCard>
           ))}
         </p>
 
@@ -279,18 +303,19 @@ function StoryElement() {
             onFlip={handleFlip}
             size="stretch"
             mobileScrollSupport={true}
+            // showCover={true}
             className="mx-32 my-4 bg-[#fcfbf6] border-2 border-black/20 rounded-lg shadow-lg z-50"
           >
             {alternateElements}
           </HTMLFlipBook>
         </div>
-        
+
         <div className="absolute z-30 flex mt-8 -translate-x-1/2 space-x-3 rtl:space-x-reverse left-1/2">
           {storyData.map((poem, index) => (
             <button
               key={poem.poem.length}
               type="button"
-              className={`w-3 h-3 rounded-full ${activeItem === index ? "bg-[#289197]" : "bg-[#e9f3f4]"
+              className={`w-4 h-4 rounded-full ${activeItem === index ? "bg-[#e85e65]" : "bg-[#fcfbf6]"
                 } focus:outline-none`}
               aria-current={activeItem === index ? "true" : "false"}
               aria-label={`Slide ${index + 1}`}
