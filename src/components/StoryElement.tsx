@@ -1,11 +1,7 @@
 import Navbar from "./Navbar";
 import Speech from "./SpeechNew";
-import React, { useEffect, useRef, useState } from "react";
-import { ChevronLeftIcon, ChevronRightIcon, Volume2 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import HTMLFlipBook from "react-pageflip";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
-import ViewWords from "./ViewWords";
-import Test from "./test";
 
 type PoemData = {
   poem: string;
@@ -85,8 +81,7 @@ function StoryElement() {
         />,
         <p key={`poem${i}`} className="text-[40px] p-4 rounded-lg bg-[#fcfbf6] h-full overflow-y-auto w-full">
           {actualSentences[i] && actualSentences[i].map((data, index) => (
-            // <HoverCard>
-            // <HoverCardTrigger >
+           
             <span key={index} className={`relative group cursor-pointer ${data.class}`}>
               {data.word + " "}
               <div className={`z-40 absolute left-1/2 transform -translate-x-1/2 top-full border mb-2 hidden group-hover:block bg-white rounded p-3 w-max`}>
@@ -114,29 +109,7 @@ function StoryElement() {
                 )}
               </div>
             </span>
-            // </HoverCardTrigger>
-
-            //   {data.readFlag ? (
-            //     <HoverCardContent sticky="always">
-            //       <div className="flex justify-evenly gap-7">
-            //         <p className={data.class}>{data.word}</p>
-            //         <Volume2
-            //           size={36}
-            //           strokeWidth={2.25}
-            //           color={"#785153"}
-            //           onClick={() => {
-            //             handleTextToSpeech(data.word);
-            //           }}
-            //           className="mt-4"
-            //         />
-            //       </div>
-            //     </HoverCardContent>
-            //   ) : (
-            //     <HoverCardContent sideOffset={90}>
-            //       <p className={data.class}>{data.word}</p>
-            //     </HoverCardContent>
-            //   )}
-            // </HoverCard>
+            
           ))}
         </p>
 
