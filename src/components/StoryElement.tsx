@@ -72,54 +72,54 @@ function StoryElement() {
     setActualSentences(sentences);
     console.log(actualSentences)
     // setWordIndex(Array(storyData.length).fill(0));
-    
+
   }, [storyData]);
 
-  useEffect(()=> {
+  useEffect(() => {
     const newAlternateElements = [];
     for (let i = 0; i < storyData.length; i++) {
       const item = storyData[i];
       newAlternateElements.push(
         <img key={`img${i}`} src={item.image} alt="poem"
-        className="rounded-lg object-cover w-[500px] h-[500px] shadow-xl border"
-    />,
-        <p key={`poem${i}`} className="text-[40px] p-4 rounded-lg bg-[#fcfbf6]">
+          className="rounded-lg object-cover w-[500px] h-[500px] shadow-xl border"
+        />,
+        <p key={`poem${i}`} className="text-[40px] p-4 rounded-lg bg-[#fcfbf6] h-full overflow-y-auto overflow-x-hidden">
           {actualSentences[i] && actualSentences[i].map((data, index) => (
             <HoverCard>
-            <HoverCardTrigger>
-              <span key={index} className={data.class}>
-                {data.word + " "}
-              </span>
-            </HoverCardTrigger>
+              <HoverCardTrigger>
+                <span key={index} className={data.class}>
+                  {data.word + " "}
+                </span>
+              </HoverCardTrigger>
 
-            {data.readFlag ? (
-              <HoverCardContent>
-                <div className="flex justify-evenly gap-7">
+              {data.readFlag ? (
+                <HoverCardContent>
+                  <div className="flex justify-evenly gap-7">
+                    <p className={data.class}>{data.word}</p>
+                    <Volume2
+                      size={36}
+                      strokeWidth={2.25}
+                      color={"#785153"}
+                      onClick={() => {
+                        handleTextToSpeech(data.word);
+                      }}
+                      className="mt-4"
+                    />
+                  </div>
+                </HoverCardContent>
+              ) : (
+                <HoverCardContent>
                   <p className={data.class}>{data.word}</p>
-                  <Volume2
-                    size={36}
-                    strokeWidth={2.25}
-                    color={"#785153"}
-                    // onClick={() => {
-                    //   handleTextToSpeech(data.word);
-                    // }}
-                    className="mt-4"
-                  />
-                </div>
-              </HoverCardContent>
-            ) : (
-              <HoverCardContent>
-                <p className={data.class}>{data.word}</p>
-              </HoverCardContent>
-            )}
-          </HoverCard>
+                </HoverCardContent>
+              )}
+            </HoverCard>
           ))}
         </p>
 
       );
     }
     setAlternateElements(newAlternateElements);
-  },[actualSentences])
+  }, [actualSentences])
 
   const childRef = useRef();
 
@@ -239,8 +239,19 @@ function StoryElement() {
     });
   };
 
+  const handleTextToSpeech = (text: string) => {
+    const word = new SpeechSynthesisUtterance(text);
+    const voices = speechSynthesis.getVoices();
+
+    word.voice = voices[10];
+    console.log(speechSynthesis.getVoices());
+
+    word.lang = "ta-IN";
+    speechSynthesis.speak(word);
+  };
+
   const handleFlip = (e) => {
-    setActiveItem((e.data)/2)
+    setActiveItem((e.data) / 2)
     setWordIndex(0)
     console.log(e.data)
   }
@@ -270,29 +281,10 @@ function StoryElement() {
             mobileScrollSupport={true}
             className="mx-32 my-4 bg-[#fcfbf6] border-2 border-black/20 rounded-lg shadow-lg z-50"
           >
-            {/* {actualSentences.map((actualSentence, index) => (
-              <div
-                className={`${activeItem === index ? "" : "hidden"
-                  } transition-all duration-200 ease-linear flex justify-center gap-8 overflow-hidden h-full items-center`}
-                data-carousel-item={activeItem === index ? "active" : null}
-                key={index}
-                style={{ left: `${index * 100}%` }}
-                // data-density="hard"
-              >
-              <ViewWords
-              key={index}
-              actualSentence={actualSentence}
-              image={storyData[index].image}
-              />
-              </div>
-            ))} */}
-            
-
             {alternateElements}
-
           </HTMLFlipBook>
         </div>
-        {/* <Test /> */}
+        
         <div className="absolute z-30 flex mt-8 -translate-x-1/2 space-x-3 rtl:space-x-reverse left-1/2">
           {storyData.map((poem, index) => (
             <button
