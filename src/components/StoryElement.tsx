@@ -17,7 +17,7 @@ function StoryElement() {
     { word: string; class: string; readFlag: boolean }[][]
   >([]);
   const [chances, setChances] = useState<number>(3);
-  const [wordIndex, setWordIndex] = useState<number>(0);
+  const [wordIndex, setWordIndex] = useState<number[]>([]);
   let wordMispelled = false;
 
   useEffect(() => {
@@ -32,16 +32,7 @@ function StoryElement() {
 
     fetchStoryData();
   }, [language]);
-
-  const nextItem = () => {
-    setActiveItem((prevItem) => (prevItem === storyData.length - 1 ? 0 : prevItem + 1));
-    setWordIndex(0);
-  };
-
-  const prevItem = () => {
-    setActiveItem((prevItem) => (prevItem === 0 ? storyData.length - 1 : prevItem - 1));
-    setWordIndex(0);
-  };
+  
   const goToItem = (index: number) => {
     setActiveItem(index);
     resetStory();
@@ -65,7 +56,7 @@ function StoryElement() {
     console.log(sentences);
     setActualSentences(sentences);
     console.log(actualSentences)
-    // setWordIndex(Array(storyData.length).fill(0));
+    setWordIndex(Array(storyData.length).fill(0));
 
   }, [storyData]);
 
@@ -128,13 +119,13 @@ function StoryElement() {
         setChances(3);
       }
       // let wordIndex = 0
-      if (wordIndex < actualSentences[activeItem].length) {
+      if (wordIndex[activeItem] < actualSentences[activeItem].length) {
         const currentElement = transcript[transcript.length - 1];
         // console.log(currentElement)
 
         if (
           currentElement.toLocaleLowerCase() ===
-          actualSentences[activeItem][wordIndex].word
+          actualSentences[activeItem][wordIndex[activeItem]].word
             .replace(/[".,:'";\-_ 0-9]/g, "")
             .toLocaleLowerCase()
         ) {
@@ -142,20 +133,25 @@ function StoryElement() {
 
           // change colour to blue
           const tempSentences = [...actualSentences];
-          tempSentences[activeItem][wordIndex] = {
-            ...tempSentences[activeItem][wordIndex],
+          tempSentences[activeItem][wordIndex[activeItem]] = {
+            ...tempSentences[activeItem][wordIndex[activeItem]],
             class: "blue",
             readFlag: true
           };
           setActualSentences(tempSentences);
 
           //go to the next actual sentence.
-          setWordIndex(wordIndex + 1);
+          // setWordIndex(wordIndex + 1);
+          setWordIndex(prevWordIndex => {
+            const newWordIndex = [...prevWordIndex];
+            newWordIndex[activeItem] = newWordIndex[activeItem]  + 1;
+            return newWordIndex;
+          });
         } else {
           // console.log("Current word spoken is not matching with the actual sentence")
           const tempSentences = [...actualSentences];
-          tempSentences[activeItem][wordIndex] = {
-            ...tempSentences[activeItem][wordIndex],
+          tempSentences[activeItem][wordIndex[activeItem]] = {
+            ...tempSentences[activeItem][wordIndex[activeItem]],
             class: "yellow",
             readFlag: true
           };
@@ -167,34 +163,46 @@ function StoryElement() {
             if (chances == 0) {
               // console.log("the element can no longer considered for reading.")
               const tempSentences = [...actualSentences];
-              tempSentences[activeItem][wordIndex] = {
-                ...tempSentences[activeItem][wordIndex],
+              tempSentences[activeItem][wordIndex[activeItem]] = {
+                ...tempSentences[activeItem][wordIndex[activeItem]],
                 class: "red",
                 readFlag: true
               };
               setActualSentences(tempSentences);
-              setWordIndex(wordIndex + 1);
+              // setWordIndex(wordIndex + 1);
+              // setWordIndex(prevWordIndex => [...prevWordIndex, prevWordIndex.length]);
+              setWordIndex(prevWordIndex => {
+                const newWordIndex = [...prevWordIndex];
+                newWordIndex[activeItem] = newWordIndex[activeItem]  + 1;
+                return newWordIndex;
+              });
+
               // setWordMispelled(false)
               wordMispelled = false;
             } else {
               const currentElement = transcript[transcript.length - 1];
               if (
                 currentElement.toLocaleLowerCase() ===
-                actualSentences[activeItem][wordIndex].word
+                actualSentences[activeItem][wordIndex[activeItem]].word
                   .replace(/[".,:'";\-_ 0-9]/g, "")
                   .toLocaleLowerCase()
               ) {
                 // console.log("Current word spoken is matching with the existing current word")
                 // change colour to blue
                 const tempSentences = [...actualSentences];
-                tempSentences[activeItem][wordIndex] = {
-                  ...tempSentences[activeItem][wordIndex],
+                tempSentences[activeItem][wordIndex[activeItem]] = {
+                  ...tempSentences[activeItem][wordIndex[activeItem]],
                   class: "blue",
                   readFlag: true
                 };
                 setActualSentences(tempSentences);
                 //go to the next actual sentence.
-                setWordIndex(wordIndex + 1);
+                // setWordIndex(wordIndex + 1);
+                setWordIndex(prevWordIndex => {
+                  const newWordIndex = [...prevWordIndex];
+                  newWordIndex[activeItem] = newWordIndex[activeItem]  + 1;
+                  return newWordIndex;
+                });
                 // setWordMispelled(false)
                 wordMispelled = false;
               } else {
@@ -223,7 +231,11 @@ function StoryElement() {
       });
     setActualSentences(sentences);
     resetCurrentTranscript();
-    setWordIndex(0);
+    setWordIndex(prevWordIndex => {
+      const newWordIndex = [...prevWordIndex];
+      newWordIndex[activeItem] = 0;
+      return newWordIndex;
+    });
   };
 
   const resetCurrentTranscript = () => {
@@ -245,10 +257,10 @@ function StoryElement() {
     speechSynthesis.speak(word);
   };
 
-  const handleFlip = (e) => {
+  const handleFlip = (e: {data: number}) => {
     setActiveItem((e.data) / 2)
-    setWordIndex(0)
-    console.log(e.data)
+    // setWordIndex(0)
+    console.log(e)
   }
 
   return (
@@ -275,8 +287,8 @@ function StoryElement() {
             size="stretch"
             mobileScrollSupport={true}
             // showCover={true}
-            className="mx-32 my-4 bg-[#fcfbf6] border-2 border-black/20 rounded-lg shadow-lg z-50"
-          >
+            className="mx-32 my-4 bg-[#fcfbf6] border-2 border-black/20 rounded-lg shadow-lg z-50" 
+            style={{}} startPage={0} maxWidth={0} maxHeight={0} drawShadow={true} flippingTime={1000} usePortrait={true} startZIndex={0} autoSize={true} showCover={false} clickEventForward={true} useMouseEvents={true} swipeDistance={0} showPageCorners={true} disableFlipByClick={false}>
             {alternateElements}
           </HTMLFlipBook>
         </div>
