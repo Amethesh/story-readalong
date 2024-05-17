@@ -9,8 +9,6 @@ type PoemData = {
 };
 
 function StoryElement() {
-  // const params = useParams();
-  // console.log(params.storyId);
   const [storyData, setStoryData] = useState<PoemData[]>([]);
   const [language, setLanguage] = useState("en-IN");
   const [activeItem, setActiveItem] = useState(0);
