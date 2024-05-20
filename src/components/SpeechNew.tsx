@@ -51,11 +51,29 @@ const Speech = forwardRef((props: SpeechProps, ref: ForwardedRef<unknown>) => {
   useEffect(() => {
     props.setTranscript((prevTranscript) => {
       const newTranscript = [...prevTranscript];
-      console.log("NEW TR:",newTranscript)
-      newTranscript[props.activeItem] = transcript;
+      console.log("Previous Transcript:", newTranscript);
+
+      if (newTranscript[props.activeItem]) {
+        const existingWords = newTranscript[props.activeItem].split(' ');
+        const newWords = transcript.split(' ');
+        
+        // Find the words that are not already in the existing transcript
+        const wordsToAdd = newWords.filter(word => !existingWords.includes(word));
+
+        // Append only the new words
+        newTranscript[props.activeItem] = [...existingWords, ...wordsToAdd].join(' ');
+      } else {
+        newTranscript[props.activeItem] = transcript;
+      }
+
+      console.log("Updated Transcript:", newTranscript);
       return newTranscript;
     });
   }, [transcript]);
+
+  useEffect(() => {
+    resetTranscript();
+  }, [props.activeItem]);
 
   if (!browserSupportsSpeechRecognition) {
     return <BrowserNotSupport />;

@@ -51,9 +51,10 @@ function StoryElement() {
   
   const goToItem = (index: number) => {
     setActiveItem(index);
-    console.log("index",index+2)
+    console.log("index",index)
+    console.log("index*2",index*2)
     //@ts-ignore
-    book.current.pageFlip().flip((index*2))
+    book.current.pageFlip().flip(index*2)
     resetStory();
   };
 
@@ -77,7 +78,7 @@ function StoryElement() {
     console.log(actualSentences)
     setWordIndex(Array(storyData.length).fill(0));
 
-  }, [storyData]);
+  }, [storyData, language]);
 
   useEffect(() => {
     const newAlternateElements = [];
@@ -305,18 +306,19 @@ function StoryElement() {
             onFlip={handleFlip}
             size="stretch"
             mobileScrollSupport={true}
+
             ref={book}
             // showCover={true}
             className="mx-32 my-4 bg-[#fcfbf6] border-2 border-black/20 rounded-lg shadow-lg z-50" 
-            style={{}} startPage={0} maxWidth={0} maxHeight={0} drawShadow={true} flippingTime={1000} usePortrait={true} startZIndex={0} autoSize={true} showCover={false} clickEventForward={true} useMouseEvents={true} swipeDistance={0} showPageCorners={true} disableFlipByClick={false}>
+            style={{}} startPage={0} maxWidth={0} maxHeight={0} drawShadow={true} flippingTime={1000} usePortrait={true} startZIndex={0} autoSize={true} showCover={false} clickEventForward={true} useMouseEvents={true} swipeDistance={0} showPageCorners={true} disableFlipByClick={true}>
             {alternateElements}
           </HTMLFlipBook>
         </div>
 
         <div className="absolute z-30 flex mt-8 -translate-x-1/2 space-x-3 rtl:space-x-reverse left-1/2">
-          {storyData.map((poem, index) => (
+          {storyData.map((_, index) => (
             <button
-              key={poem.poem.length}
+              key={index}
               type="button"
               className={`w-4 h-4 rounded-full ${activeItem === index ? "bg-[#e85e65]" : "bg-[#fcfbf6]"
                 } focus:outline-none`}
