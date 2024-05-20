@@ -1,5 +1,6 @@
 import React, { ForwardedRef, forwardRef, useEffect, useImperativeHandle, useState } from "react";
-import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
+// import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
+import useSpeechRecognition from './Speech';
 import BrowserNotSupport from "./BrowserNotSupport";
 import {
   Select,
@@ -22,10 +23,10 @@ interface SpeechProps {
 }
 
 const Speech = forwardRef((props: SpeechProps, ref: ForwardedRef<unknown>) => {
-  const { transcript, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
+  const { transcript, resetTranscript,startListening, stopListening } = useSpeechRecognition(props.language);
 
   useImperativeHandle(ref, () => {
-    if (browserSupportsSpeechRecognition) {
+    if (true) {
       return {
         resetTranscript: resetTranscript,
         pauseListening: pauseListening
@@ -71,23 +72,23 @@ const Speech = forwardRef((props: SpeechProps, ref: ForwardedRef<unknown>) => {
     });
   }, [transcript]);
 
-  useEffect(() => {
-    resetTranscript();
-  }, [props.activeItem]);
+  // useEffect(() => {
+  //   resetTranscript();
+  // }, [props.activeItem]);
 
-  if (!browserSupportsSpeechRecognition) {
-    return <BrowserNotSupport />;
-  }
+  // if (!browserSupportsSpeechRecognition) {
+  //   return <BrowserNotSupport />;
+  // }
 
   const keepListening = () => {
     console.log(props.language);
-    SpeechRecognition.startListening({ continuous: true, language: props.language });
+    startListening();
     startRecording();
     setPlay(false);
   };
 
   const pauseListening = () => {
-    SpeechRecognition.stopListening();
+    stopListening();
     console.log("Paused!!!!!");
     stopRecording();
     setPlay(true);
