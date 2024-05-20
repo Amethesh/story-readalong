@@ -39,22 +39,27 @@ function StoryElement() {
     // setActiveItem((prevItem) => (prevItem === storyData.length - 1 ? 0 : prevItem + 1));
     // setWordIndex(0);
     //@ts-ignore
-    book.current.pageFlip().flipNext()
+    book.current.pageFlip().flipNext();
   };
-  
+
   const prevItem = () => {
     // setActiveItem((prevItem) => (prevItem === 0 ? storyData.length - 1 : prevItem - 1));
     // setWordIndex(0);
     //@ts-ignore
-    book.current.pageFlip().flipPrev()
+    book.current.pageFlip().flipPrev();
   };
-  
+
   const goToItem = (index: number) => {
     setActiveItem(index);
-    console.log("index",index)
-    console.log("index*2",index*2)
+    console.log("index", index);
+    console.log("index*2", index * 2);
     //@ts-ignore
-    book.current.pageFlip().flip(index*2)
+    book.current
+      .pageFlip()
+      .flip(index * 2, "top")
+      .on("touchstart", {
+        passive: true
+      });
     resetStory();
   };
 
@@ -75,9 +80,8 @@ function StoryElement() {
     );
     console.log(sentences);
     setActualSentences(sentences);
-    console.log(actualSentences)
+    console.log(actualSentences);
     setWordIndex(Array(storyData.length).fill(0));
-
   }, [storyData, language]);
 
   useEffect(() => {
@@ -85,25 +89,34 @@ function StoryElement() {
     for (let i = 0; i < storyData.length; i++) {
       const item = storyData[i];
       newAlternateElements.push(
-        <img key={`img${i}`} src={item.image} alt="poem"
+        <img
+          key={`img${i}`}
+          src={item.image}
+          alt="poem"
           className="rounded-lg object-scale-down w-[500px] h-[500px] shadow-xl border"
         />,
-        <p key={`poem${i}`} className="text-[50px] p-4 rounded-lg bg-[#fcfbf6] h-full overflow-y-auto w-full">
-          {actualSentences[i] && actualSentences[i].map((data, index) => (
-           
-            <span key={index} className={`relative group cursor-pointer ${data.class}`}>
-              {data.word + " "}
-              <div className={`z-40 absolute left-1/2 transform -translate-x-1/2 top-full border mb-2 hidden group-hover:block bg-white rounded p-3 w-max`}>
-                {data.readFlag ? (
-                  <div className="z-50 flex justify-evenly gap-7">
-                    <p className="black"
-                      onMouseEnter={() => {
-                        handleTextToSpeech(data.word);
-                      }}
-                    >
-                      {data.word}
-                    </p>
-                    {/* <Volume2
+        <p
+          key={`poem${i}`}
+          className="text-[50px] p-4 rounded-lg bg-[#fcfbf6] h-full overflow-y-auto w-full"
+        >
+          {actualSentences[i] &&
+            actualSentences[i].map((data, index) => (
+              <span key={index} className={`relative group cursor-pointer ${data.class}`}>
+                {data.word + " "}
+                <div
+                  className={`z-40 absolute left-1/2 transform -translate-x-1/2 top-full border mb-2 hidden group-hover:block bg-white rounded p-3 w-max`}
+                >
+                  {data.readFlag ? (
+                    <div className="z-50 flex justify-evenly gap-7">
+                      <p
+                        className="black"
+                        onMouseEnter={() => {
+                          handleTextToSpeech(data.word);
+                        }}
+                      >
+                        {data.word}
+                      </p>
+                      {/* <Volume2
                       size={36}
                       strokeWidth={2.25}
                       color={"#785153"}
@@ -112,20 +125,18 @@ function StoryElement() {
                       }}
                       className="mt-4"
                     /> */}
-                  </div>
-                ) : (
-                  <p className={data.class}>{data.word}</p>
-                )}
-              </div>
-            </span>
-            
-          ))}
+                    </div>
+                  ) : (
+                    <p className={data.class}>{data.word}</p>
+                  )}
+                </div>
+              </span>
+            ))}
         </p>
-
       );
     }
     setAlternateElements(newAlternateElements);
-  }, [actualSentences])
+  }, [actualSentences]);
 
   const childRef = useRef();
 
@@ -162,9 +173,9 @@ function StoryElement() {
 
           //go to the next actual sentence.
           // setWordIndex(wordIndex + 1);
-          setWordIndex(prevWordIndex => {
+          setWordIndex((prevWordIndex) => {
             const newWordIndex = [...prevWordIndex];
-            newWordIndex[activeItem] = newWordIndex[activeItem]  + 1;
+            newWordIndex[activeItem] = newWordIndex[activeItem] + 1;
             return newWordIndex;
           });
         } else {
@@ -191,9 +202,9 @@ function StoryElement() {
               setActualSentences(tempSentences);
               // setWordIndex(wordIndex + 1);
               // setWordIndex(prevWordIndex => [...prevWordIndex, prevWordIndex.length]);
-              setWordIndex(prevWordIndex => {
+              setWordIndex((prevWordIndex) => {
                 const newWordIndex = [...prevWordIndex];
-                newWordIndex[activeItem] = newWordIndex[activeItem]  + 1;
+                newWordIndex[activeItem] = newWordIndex[activeItem] + 1;
                 return newWordIndex;
               });
 
@@ -218,9 +229,9 @@ function StoryElement() {
                 setActualSentences(tempSentences);
                 //go to the next actual sentence.
                 // setWordIndex(wordIndex + 1);
-                setWordIndex(prevWordIndex => {
+                setWordIndex((prevWordIndex) => {
                   const newWordIndex = [...prevWordIndex];
-                  newWordIndex[activeItem] = newWordIndex[activeItem]  + 1;
+                  newWordIndex[activeItem] = newWordIndex[activeItem] + 1;
                   return newWordIndex;
                 });
                 // setWordMispelled(false)
@@ -251,7 +262,7 @@ function StoryElement() {
       });
     setActualSentences(sentences);
     resetCurrentTranscript();
-    setWordIndex(prevWordIndex => {
+    setWordIndex((prevWordIndex) => {
       const newWordIndex = [...prevWordIndex];
       newWordIndex[activeItem] = 0;
       return newWordIndex;
@@ -277,11 +288,11 @@ function StoryElement() {
     speechSynthesis.speak(word);
   };
 
-  const handleFlip = (e: {data: number}) => {
-    setActiveItem((e.data) / 2)
+  const handleFlip = (e: { data: number }) => {
+    setActiveItem(e.data / 2);
     // setWordIndex(0)
-    console.log(e)
-  }
+    console.log(e);
+  };
 
   return (
     <>
@@ -306,11 +317,25 @@ function StoryElement() {
             onFlip={handleFlip}
             size="stretch"
             mobileScrollSupport={true}
-
             ref={book}
             // showCover={true}
-            className="mx-32 my-4 bg-[#fcfbf6] border-2 border-black/20 rounded-lg shadow-lg z-50" 
-            style={{}} startPage={0} maxWidth={0} maxHeight={0} drawShadow={true} flippingTime={1000} usePortrait={true} startZIndex={0} autoSize={true} showCover={false} clickEventForward={true} useMouseEvents={true} swipeDistance={0} showPageCorners={true} disableFlipByClick={true}>
+            className="mx-32 my-4 bg-[#fcfbf6] border-2 border-black/20 rounded-lg shadow-lg z-50"
+            style={{}}
+            startPage={0}
+            maxWidth={0}
+            maxHeight={0}
+            drawShadow={true}
+            flippingTime={1000}
+            usePortrait={true}
+            startZIndex={0}
+            autoSize={true}
+            showCover={false}
+            clickEventForward={true}
+            useMouseEvents={true}
+            swipeDistance={0}
+            showPageCorners={true}
+            disableFlipByClick={true}
+          >
             {alternateElements}
           </HTMLFlipBook>
         </div>
@@ -320,12 +345,16 @@ function StoryElement() {
             <button
               key={index}
               type="button"
-              className={`w-4 h-4 rounded-full ${activeItem === index ? "bg-[#e85e65]" : "bg-[#fcfbf6]"
-                } focus:outline-none`}
+              className={`w-4 h-4 rounded-full ${
+                activeItem === index ? "bg-[#e85e65]" : "bg-[#fcfbf6]"
+              } focus:outline-none`}
               aria-current={activeItem === index ? "true" : "false"}
               aria-label={`Slide ${index + 1}`}
               data-carousel-slide-to={index}
-              onClick={() => goToItem(index)}
+              onClick={(e) => {
+                e.preventDefault;
+                goToItem(index);
+              }}
             ></button>
           ))}
         </div>
