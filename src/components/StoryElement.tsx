@@ -36,13 +36,17 @@ function StoryElement() {
   }, [language]);
 
   const nextItem = () => {
+    childRef.current?.pauseListening()
     // setActiveItem((prevItem) => (prevItem === storyData.length - 1 ? 0 : prevItem + 1));
     // setWordIndex(0);
     //@ts-ignore
     book.current.pageFlip().flipNext()
+
+    // childRef.current?.keepListening()
   };
   
   const prevItem = () => {
+    childRef.current?.pauseListening()
     // setActiveItem((prevItem) => (prevItem === 0 ? storyData.length - 1 : prevItem - 1));
     // setWordIndex(0);
     //@ts-ignore
@@ -269,7 +273,7 @@ function StoryElement() {
     const word = new SpeechSynthesisUtterance(text);
     const voices = speechSynthesis.getVoices();
 
-    word.voice = voices[10];
+    word.voice = voices[7];
     console.log(speechSynthesis.getVoices());
 
     word.lang = "ta-IN";
@@ -293,6 +297,7 @@ function StoryElement() {
         setLanguage={setLanguage}
         ref={childRef}
         transcripts={transcripts}
+        actualSentences = {actualSentences}
       />
       <div id="animation-carousel" className="relative w-full mt-8" data-carousel="static">
         <div className="h-full w-screen overflow-hidden flex justify-center">
@@ -305,10 +310,12 @@ function StoryElement() {
             onFlip={handleFlip}
             size="stretch"
             mobileScrollSupport={true}
+            // clickEventForward = {false}
+
             ref={book}
             // showCover={true}
             className="mx-32 my-4 bg-[#fcfbf6] border-2 border-black/20 rounded-lg shadow-lg z-50" 
-            style={{}} startPage={0} maxWidth={0} maxHeight={0} drawShadow={true} flippingTime={1000} usePortrait={true} startZIndex={0} autoSize={true} showCover={false} clickEventForward={true} useMouseEvents={true} swipeDistance={0} showPageCorners={true} disableFlipByClick={false}>
+            style={{}} startPage={0} maxWidth={0} maxHeight={0} drawShadow={true} flippingTime={1000} usePortrait={true} startZIndex={0} autoSize={true} showCover={false} clickEventForward={true} useMouseEvents={true} swipeDistance={0} showPageCorners={true} disableFlipByClick={true}>
             {alternateElements}
           </HTMLFlipBook>
         </div>

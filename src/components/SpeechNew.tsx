@@ -19,6 +19,7 @@ interface SpeechProps {
   language: string;
   setLanguage: React.Dispatch<React.SetStateAction<string>>;
   transcripts: string[];
+  actualSentences: { word: string; class: string; readFlag: boolean }[][];
 }
 
 const Speech = forwardRef((props: SpeechProps, ref: ForwardedRef<unknown>) => {
@@ -28,7 +29,8 @@ const Speech = forwardRef((props: SpeechProps, ref: ForwardedRef<unknown>) => {
     if (browserSupportsSpeechRecognition) {
       return {
         resetTranscript: resetTranscript,
-        pauseListening: pauseListening
+        pauseListening: pauseListening,
+        keepListening: keepListening
       };
     }
   });
