@@ -19,6 +19,7 @@ function StoryElement() {
   >([]);
   const [chances, setChances] = useState<number>(3);
   const [wordIndex, setWordIndex] = useState<number[]>([]);
+  const [allowPage, setAllowPage] = useState<boolean[]>([]);
   let wordMispelled = false;
   const book = useRef();
 
@@ -33,9 +34,13 @@ function StoryElement() {
     };
 
     fetchStoryData();
+    setTranscript([])
   }, [language]);
 
   const nextItem = () => {
+
+    //@ts-ignore
+    childRef.current?.pauseListening()
     // setActiveItem((prevItem) => (prevItem === storyData.length - 1 ? 0 : prevItem + 1));
     // setWordIndex(0);
     //@ts-ignore
@@ -50,17 +55,19 @@ function StoryElement() {
   };
 
   const goToItem = (index: number) => {
-    setActiveItem(index);
-    console.log("index", index);
-    console.log("index*2", index * 2);
-    //@ts-ignore
-    book.current
+    if(!allowPage[index]){
+      setActiveItem(index);
+      console.log("index", index);
+      console.log("index*2", index * 2);
+      //@ts-ignore
+      book.current
       .pageFlip()
       .flip(index * 2, "top")
       .on("touchstart", {
         passive: true
       });
-    resetStory();
+      resetStory();
+    }
   };
 
   const [alternateElements, setAlternateElements] = useState<JSX.Element[]>([]);
@@ -82,6 +89,7 @@ function StoryElement() {
     setActualSentences(sentences);
     console.log(actualSentences);
     setWordIndex(Array(storyData.length).fill(0));
+    setAllowPage(Array(storyData.length).fill(true));
   }, [storyData, language]);
 
   useEffect(() => {
@@ -246,6 +254,15 @@ function StoryElement() {
         }
       }
     }
+
+    if (actualSentences[activeItem] && actualSentences[activeItem].every(sentence => sentence.readFlag)) {
+      setAllowPage((prevAllowPage) => {
+        const newAllowPage = [...prevAllowPage];
+        newAllowPage[activeItem] = false;
+        return newAllowPage;
+      });
+    }
+
   }, [transcripts]);
 
   const resetStory = () => {
@@ -318,8 +335,6 @@ function StoryElement() {
             size="stretch"
             mobileScrollSupport={true}
             ref={book}
-            // showCover={true}
-            className="mx-32 my-4 bg-[#fcfbf6] border-2 border-black/20 rounded-lg shadow-lg z-50"
             style={{}}
             startPage={0}
             maxWidth={0}
@@ -331,11 +346,13 @@ function StoryElement() {
             autoSize={true}
             showCover={false}
             clickEventForward={true}
-            useMouseEvents={true}
-            swipeDistance={0}
+            useMouseEvents={false}
+            swipeDistance={30}
             showPageCorners={true}
             disableFlipByClick={true}
-          >
+            // useMouseEvents={false}
+            className="mx-32 my-4 bg-[#fcfbf6] border-2 border-black/20 rounded-lg shadow-lg z-50"
+            >
             {alternateElements}
           </HTMLFlipBook>
         </div>
@@ -372,9 +389,10 @@ function StoryElement() {
         </button>
         <button
           type="button"
-          className="absolute top-0 end-0 z-30 flex items-center justify-center h-full cursor-pointer group focus:outline-none "
+          className={`absolute top-0 end-0 z-30 flex items-center justify-center h-full cursor-pointer group focus:outline-none ${allowPage[activeItem] ? 'hidden' : ''}`}
           data-carousel-next
           onClick={nextItem}
+          // disabled={allowPage[activeItem]}
         >
           <ChevronRightIcon
             size={60}
