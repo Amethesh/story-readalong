@@ -1,3 +1,4 @@
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import Navbar from "./Navbar";
 import Speech from "./SpeechNew";
 import { useEffect, useRef, useState } from "react";
@@ -19,6 +20,7 @@ function StoryElement() {
   const [chances, setChances] = useState<number>(3);
   const [wordIndex, setWordIndex] = useState<number[]>([]);
   let wordMispelled = false;
+  const book = useRef();
 
   useEffect(() => {
     const fetchStoryData = async () => {
@@ -32,9 +34,26 @@ function StoryElement() {
 
     fetchStoryData();
   }, [language]);
+
+  const nextItem = () => {
+    // setActiveItem((prevItem) => (prevItem === storyData.length - 1 ? 0 : prevItem + 1));
+    // setWordIndex(0);
+    //@ts-ignore
+    book.current.pageFlip().flipNext()
+  };
+  
+  const prevItem = () => {
+    // setActiveItem((prevItem) => (prevItem === 0 ? storyData.length - 1 : prevItem - 1));
+    // setWordIndex(0);
+    //@ts-ignore
+    book.current.pageFlip().flipPrev()
+  };
   
   const goToItem = (index: number) => {
     setActiveItem(index);
+    console.log("index",index+2)
+    //@ts-ignore
+    book.current.pageFlip().flip(index*2)
     resetStory();
   };
 
@@ -66,9 +85,9 @@ function StoryElement() {
       const item = storyData[i];
       newAlternateElements.push(
         <img key={`img${i}`} src={item.image} alt="poem"
-          className="rounded-lg object-cover w-[500px] h-[500px] shadow-xl border"
+          className="rounded-lg object-scale-down w-[500px] h-[500px] shadow-xl border"
         />,
-        <p key={`poem${i}`} className="text-[40px] p-4 rounded-lg bg-[#fcfbf6] h-full overflow-y-auto w-full">
+        <p key={`poem${i}`} className="text-[50px] p-4 rounded-lg bg-[#fcfbf6] h-full overflow-y-auto w-full">
           {actualSentences[i] && actualSentences[i].map((data, index) => (
            
             <span key={index} className={`relative group cursor-pointer ${data.class}`}>
@@ -126,7 +145,7 @@ function StoryElement() {
         if (
           currentElement.toLocaleLowerCase() ===
           actualSentences[activeItem][wordIndex[activeItem]].word
-            .replace(/[".,:'";\-_ 0-9]/g, "")
+            .replace(/[".,:!?'";\-_ 0-9]/g, "")
             .toLocaleLowerCase()
         ) {
           // console.log("Current word spoken is matching with the existing current word")
@@ -184,7 +203,7 @@ function StoryElement() {
               if (
                 currentElement.toLocaleLowerCase() ===
                 actualSentences[activeItem][wordIndex[activeItem]].word
-                  .replace(/[".,:'";\-_ 0-9]/g, "")
+                  .replace(/[".,:!?'";\-_ 0-9]/g, "")
                   .toLocaleLowerCase()
               ) {
                 // console.log("Current word spoken is matching with the existing current word")
@@ -286,6 +305,7 @@ function StoryElement() {
             onFlip={handleFlip}
             size="stretch"
             mobileScrollSupport={true}
+            ref={book}
             // showCover={true}
             className="mx-32 my-4 bg-[#fcfbf6] border-2 border-black/20 rounded-lg shadow-lg z-50" 
             style={{}} startPage={0} maxWidth={0} maxHeight={0} drawShadow={true} flippingTime={1000} usePortrait={true} startZIndex={0} autoSize={true} showCover={false} clickEventForward={true} useMouseEvents={true} swipeDistance={0} showPageCorners={true} disableFlipByClick={false}>
@@ -307,7 +327,7 @@ function StoryElement() {
             ></button>
           ))}
         </div>
-        {/* <button
+        <button
           type="button"
           className="absolute top-0 start-0 z-30 flex items-center justify-center h-full cursor-pointer group focus:outline-none "
           data-carousel-prev
@@ -330,7 +350,7 @@ function StoryElement() {
             stroke="#e85e65"
             className="bg-[#e9f3f4] rounded-l-full p-1 shadow-md"
           />
-        </button> */}
+        </button>
       </div>
     </>
   );

@@ -51,6 +51,7 @@ const Speech = forwardRef((props: SpeechProps, ref: ForwardedRef<unknown>) => {
   useEffect(() => {
     props.setTranscript((prevTranscript) => {
       const newTranscript = [...prevTranscript];
+      console.log("NEW TR:",newTranscript)
       newTranscript[props.activeItem] = transcript;
       return newTranscript;
     });
