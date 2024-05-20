@@ -53,7 +53,7 @@ function StoryElement() {
     setActiveItem(index);
     console.log("index",index+2)
     //@ts-ignore
-    book.current.pageFlip().flip(index*2)
+    book.current.pageFlip().flip((index*2))
     resetStory();
   };
 
