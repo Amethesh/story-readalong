@@ -25,42 +25,51 @@ interface SpeechProps {
 
 const Speech = forwardRef((props: SpeechProps, ref: ForwardedRef<unknown>) => {
   const recognition: SpeechRecognition = new window.webkitSpeechRecognition();
-
-  // const [transcript, setTranscript] = useState('');
   const [play, setPlay] = useState(true);
   const { startRecording, stopRecording, recordingBlob } = useAudioRecorder();
   const [audioURLs, setAudioURLs] = useState<(string | undefined)[]>(Array(5).fill(undefined));
-
+  console.log(props.activeItem)
+  
   // Update the transcript state when speech recognition results are available
   let recognitionOnresult = (event: SpeechRecognitionEvent) => {
-    const speechToText = event.results[0][0].transcript;
-    // Assuming activeItem is a prop
-    const activeItemIndex = props.activeItem;
-
-    // Set the transcript at the activeItem index
-    props.setTranscript((prevTranscripts) => {
-      // Create a copy of the previous transcripts array
-      const newTranscripts = [...prevTranscripts];
-
-      // Ensure the array is long enough to include the activeItem index
-      while (newTranscripts.length <= activeItemIndex) {
-        newTranscripts.push(""); // Or any placeholder value
+    const resultsLength = event.results.length;
+    const latestResult = event.results[resultsLength - 1];
+    const speechToText = latestResult[0].transcript.trim();
+    console.log("speechToText", speechToText);
+    console.log("Event", event.results);
+    props.setTranscript((prevTranscript) => {
+      const newTranscript = [...prevTranscript];
+      if (newTranscript[props.activeItem]) {
+        const existingWords = newTranscript[props.activeItem].split(' ');
+        const newWords = speechToText.split(' ');
+  
+        // Find the words that are not already in the existing transcript
+        const wordsToAdd = newWords.filter(word => !existingWords.includes(word));
+  
+        // Append only the new words
+        newTranscript[props.activeItem] = [...existingWords, ...wordsToAdd].join(' ');
+      } else {
+        newTranscript[props.activeItem] = speechToText;
       }
-
-      // Update the specific index
-      newTranscripts[activeItemIndex] = speechToText;
-
-      return newTranscripts;
+      console.log("Updated Transcript:", newTranscript);
+      return newTranscript;
     });
   };
-
+  
   recognition.lang = props.language; // Use the language from props
+  recognition.continuous = false;
+  recognition.interimResults = true;
   recognition.onresult = recognitionOnresult;
-
+  
   // Handle imperative actions using the ref
   useImperativeHandle(ref, () => ({
     pauseListening: pauseListening
   }));
+
+  // useEffect(() => {
+  //   recognition.onresult = recognitionOnresult;
+  //   // This effect runs when activeItem changes, ensuring the new activeItem is used in the recognitionOnresult logic
+  // }, [props.activeItem]);
 
   useEffect(() => {
     if (recordingBlob) {
@@ -72,36 +81,19 @@ const Speech = forwardRef((props: SpeechProps, ref: ForwardedRef<unknown>) => {
       });
     }
   }, [recordingBlob]);
-
-  useEffect(() => {
-    if (props.transcripts[props.activeItem]) {
-      props.setTranscript((prevTranscript) => {
-        const newTranscript = [...prevTranscript];
-        const activeItemTranscript = newTranscript[props.activeItem] || "";
-
-        const existingWords = activeItemTranscript.split(" ");
-        const newWords = props.transcripts[props.activeItem].split(" ");
-
-        const wordsToAdd = newWords.filter((word) => !existingWords.includes(word));
-        newTranscript[props.activeItem] = [...existingWords, ...wordsToAdd].join(" ");
-
-        return newTranscript;
-      });
-    }
-  }, [props.transcripts, props]);
-
+  
   const keepListening = () => {
     recognition.start();
     startRecording();
     setPlay(false);
   };
-
+  
   const pauseListening = () => {
     recognition.stop();
     stopRecording();
     setPlay(true);
   };
-
+  
   const resetListening = () => {
     props.resetStory();
     setAudioURLs((prevAudioURLs) => {
@@ -110,6 +102,7 @@ const Speech = forwardRef((props: SpeechProps, ref: ForwardedRef<unknown>) => {
       return newAudioURLs;
     });
   };
+  
 
   const handleChangeLanguage = (lang: string) => {
     props.setLanguage(lang);
