@@ -120,10 +120,14 @@ const Speech = forwardRef((props: SpeechProps, ref: ForwardedRef<unknown>) => {
       {audioURLs[props.activeItem] && ( // Display audio for the active item
         <audio src={audioURLs[props.activeItem]} controls />
       )}
+      <button title="Retry reading this page">
+
       <RefreshCcw
         className="w-12 h-12 bg-[#e9f3f4] p-2 rounded-full text-[#e85e65] shadow-md cursor-pointer"
-        onClick={resetListening}
-      />
+        onClick={resetListening}        
+        
+        />
+        </button>
       {play ? (
         <MicOffIcon
           className="w-12 h-12 text-[#e9f3f4] p-2 rounded-full bg-[#e85e65] shadow-md cursor-pointer"
