@@ -3,6 +3,7 @@ import Navbar from "./Navbar";
 import Speech from "./SpeechNew";
 import { useEffect, useRef, useState } from "react";
 import HTMLFlipBook from "react-pageflip";
+import WarningCard from "./WarningCard";
 
 type PoemData = {
   poem: string;
@@ -20,6 +21,7 @@ function StoryElement() {
   const [chances, setChances] = useState<number>(3);
   const [wordIndex, setWordIndex] = useState<number[]>([]);
   const [allowPage, setAllowPage] = useState<boolean[]>([]);
+  const [showDialog, setShowDialog] = useState(false);
   let wordMispelled = false;
   const book = useRef();
 
@@ -55,17 +57,17 @@ function StoryElement() {
   };
 
   const goToItem = (index: number) => {
-    if(!allowPage[index]){
+    if (!allowPage[index]) {
       setActiveItem(index);
       console.log("index", index);
       console.log("index*2", index * 2);
       //@ts-ignore
       book.current
-      .pageFlip()
-      .flip(index * 2, "top")
-      .on("touchstart", {
-        passive: true
-      });
+        .pageFlip()
+        .flip(index * 2, "top")
+        .on("touchstart", {
+          passive: true
+        });
       resetStory();
     }
   };
@@ -155,7 +157,7 @@ function StoryElement() {
     if (transcripts && transcripts[activeItem]) {
       const transcript = transcripts[activeItem].split(" ");
       if (!wordMispelled) {
-        setChances(3);
+        setChances(5);
       }
       // let wordIndex = 0
       if (wordIndex[activeItem] < actualSentences[activeItem].length) {
@@ -265,6 +267,25 @@ function StoryElement() {
 
   }, [transcripts]);
 
+  const checkNinetyPercentRedClasses = () => {
+    // Ensure that actualSentences[activeItem] exists
+    if (!actualSentences[activeItem]) {
+      return false;
+    }
+    const sentence = actualSentences[activeItem];
+    const totalWords = sentence.length;
+    const redWords = sentence.filter(wordObject => wordObject.class === 'red').length;
+    const redPercentage = (redWords / totalWords) * 100;
+
+    return redPercentage >= 80;
+  };
+
+  useEffect(() => {
+    if (checkNinetyPercentRedClasses()) {
+      setShowDialog(true);
+    }
+  }, [actualSentences, activeItem]);
+
   const resetStory = () => {
     const sentences = [...actualSentences];
     sentences[activeItem] = storyData[activeItem].poem
@@ -323,8 +344,13 @@ function StoryElement() {
         ref={childRef}
         transcripts={transcripts}
       />
+      {showDialog && (
+        <div className="grid absolute top-0 h-screen w-screen place-items-center backdrop-blur-sm z-[999]">
+          <WarningCard setShowDialog={setShowDialog} />
+        </div>
+      )}
       <div id="animation-carousel" className="relative w-full mt-8" data-carousel="static">
-        <div className="h-full w-screen overflow-hidden flex justify-center">
+        <div className="h-full w-screen overflow-hidden flex justify-center ">
           <HTMLFlipBook
             width={800}
             height={650}
@@ -352,7 +378,7 @@ function StoryElement() {
             disableFlipByClick={true}
             // useMouseEvents={false}
             className="mx-32 my-4 bg-[#fcfbf6] border-2 border-black/20 rounded-lg shadow-lg z-50"
-            >
+          >
             {alternateElements}
           </HTMLFlipBook>
         </div>
@@ -362,9 +388,8 @@ function StoryElement() {
             <button
               key={index}
               type="button"
-              className={`w-4 h-4 rounded-full ${
-                activeItem === index ? "bg-[#e85e65]" : "bg-[#fcfbf6]"
-              } focus:outline-none`}
+              className={`w-4 h-4 rounded-full ${activeItem === index ? "bg-[#e85e65]" : "bg-[#fcfbf6]"
+                } focus:outline-none`}
               aria-current={activeItem === index ? "true" : "false"}
               aria-label={`Slide ${index + 1}`}
               data-carousel-slide-to={index}
@@ -392,7 +417,7 @@ function StoryElement() {
           className={`absolute top-0 end-0 z-30 flex items-center justify-center h-full cursor-pointer group focus:outline-none ${allowPage[activeItem] ? 'hidden' : ''}`}
           data-carousel-next
           onClick={nextItem}
-          // disabled={allowPage[activeItem]}
+        // disabled={allowPage[activeItem]}
         >
           <ChevronRightIcon
             size={60}

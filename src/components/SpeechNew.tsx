@@ -1,6 +1,7 @@
 import React, { ForwardedRef, forwardRef, useEffect, useImperativeHandle, useState } from "react";
-import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
-import BrowserNotSupport from "./BrowserNotSupport";
+// import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
+// import useSpeechRecognition from './Speech';
+// import BrowserNotSupport from "./BrowserNotSupport";
 import {
   Select,
   SelectContent,
@@ -11,6 +12,7 @@ import {
 } from "./ui/select";
 import { RefreshCcw, MicIcon, MicOffIcon } from "lucide-react";
 import { useAudioRecorder } from "react-audio-voice-recorder";
+// import {CustomSpeechRecognition, webkitSpeechRecognition, SpeechRecognitionEvent} from "../lib/speechType"
 
 interface SpeechProps {
   setTranscript: React.Dispatch<React.SetStateAction<string[]>>;
@@ -22,94 +24,91 @@ interface SpeechProps {
 }
 
 const Speech = forwardRef((props: SpeechProps, ref: ForwardedRef<unknown>) => {
-  const { transcript, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
-
-  useImperativeHandle(ref, () => {
-    if (browserSupportsSpeechRecognition) {
-      return {
-        resetTranscript: resetTranscript,
-        pauseListening: pauseListening
-      };
-    }
-  });
-
+  const recognition: SpeechRecognition = new window.webkitSpeechRecognition();
   const [play, setPlay] = useState(true);
   const { startRecording, stopRecording, recordingBlob } = useAudioRecorder();
-  const [audioURLs, setAudioURLs] = useState<(string | undefined)[]>(Array(5).fill(null)); // Array to hold audio URLs for each active item
+  const [audioURLs, setAudioURLs] = useState<(string | undefined)[]>(Array(5).fill(undefined));
+  console.log(props.activeItem)
+  
+  // Update the transcript state when speech recognition results are available
+  let recognitionOnresult = (event: SpeechRecognitionEvent) => {``
+    const resultsLength = event.results.length;
+    const latestResult = event.results[resultsLength - 1];
+    const speechToText = latestResult[0].transcript.trim();
+    console.log("speechToText", speechToText);
+    console.log("Event", event.results);
+    props.setTranscript((prevTranscript) => {
+      const newTranscript = [...prevTranscript];
+      if (newTranscript[props.activeItem]) {
+        const existingWords = newTranscript[props.activeItem].split(' ');
+        const newWords = speechToText.split(' ');
+  
+        // Find the words that are not already in the existing transcript
+        const wordsToAdd = newWords.filter(word => !existingWords.includes(word));
+  
+        // Append only the new words
+        newTranscript[props.activeItem] = [...existingWords, ...wordsToAdd].join(' ');
+      } else {
+        newTranscript[props.activeItem] = speechToText;
+      }
+      console.log("Updated Transcript:", newTranscript);
+      return newTranscript;
+    });
+  };
+  
+  recognition.lang = props.language; // Use the language from props
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.onresult = recognitionOnresult;
+  
+  // Handle imperative actions using the ref
+  useImperativeHandle(ref, () => ({
+    pauseListening: pauseListening
+  }));
+
+  // useEffect(() => {
+  //   recognition.onresult = recognitionOnresult;
+  //   // This effect runs when activeItem changes, ensuring the new activeItem is used in the recognitionOnresult logic
+  // }, [props.activeItem]);
 
   useEffect(() => {
     if (recordingBlob) {
       const newURL = URL.createObjectURL(recordingBlob);
       setAudioURLs((prevAudioURLs) => {
         const newAudioURLs = [...prevAudioURLs];
-        newAudioURLs[props.activeItem] = newURL; // Store recording blob URL for the active item
+        newAudioURLs[props.activeItem] = newURL;
         return newAudioURLs;
       });
     }
   }, [recordingBlob]);
-
-  useEffect(() => {
-    props.setTranscript((prevTranscript) => {
-      const newTranscript = [...prevTranscript];
-      console.log("Previous Transcript:", newTranscript);
-
-      if (newTranscript[props.activeItem]) {
-        const existingWords = newTranscript[props.activeItem].split(' ');
-        const newWords = transcript.split(' ');
-        
-        // Find the words that are not already in the existing transcript
-        const wordsToAdd = newWords.filter(word => !existingWords.includes(word));
-
-        // Append only the new words
-        newTranscript[props.activeItem] = [...existingWords, ...wordsToAdd].join(' ');
-      } else {
-        newTranscript[props.activeItem] = transcript;
-      }
-
-      console.log("Updated Transcript:", newTranscript);
-      return newTranscript;
-    });
-  }, [transcript]);
-
-  useEffect(() => {
-    resetTranscript();
-  }, [props.activeItem]);
-
-  if (!browserSupportsSpeechRecognition) {
-    return <BrowserNotSupport />;
-  }
-
+  
   const keepListening = () => {
-    console.log(props.language);
-    SpeechRecognition.startListening({ continuous: true, language: props.language });
+    recognition.start();
     startRecording();
     setPlay(false);
   };
-
+  
   const pauseListening = () => {
-    SpeechRecognition.stopListening();
-    console.log("Paused!!!!!");
+    recognition.stop();
     stopRecording();
     setPlay(true);
   };
-
+  
   const resetListening = () => {
-    resetTranscript();
     props.resetStory();
     setAudioURLs((prevAudioURLs) => {
       const newAudioURLs = [...prevAudioURLs];
-      newAudioURLs[props.activeItem] = undefined; // Clear recorded audio for the active item
+      newAudioURLs[props.activeItem] = undefined;
       return newAudioURLs;
     });
   };
+  
 
   const handleChangeLanguage = (lang: string) => {
-    console.log("lang:", lang);
     props.setLanguage(lang);
     pauseListening();
     resetListening();
   };
-
   return (
     <div className="flex gap-4 justify-end items-center w-full px-12">
       {props.transcripts[props.activeItem] && (
@@ -120,14 +119,10 @@ const Speech = forwardRef((props: SpeechProps, ref: ForwardedRef<unknown>) => {
       {audioURLs[props.activeItem] && ( // Display audio for the active item
         <audio src={audioURLs[props.activeItem]} controls />
       )}
-      <button title="Retry reading this page">
-
       <RefreshCcw
         className="w-12 h-12 bg-[#e9f3f4] p-2 rounded-full text-[#e85e65] shadow-md cursor-pointer"
-        onClick={resetListening}        
-        
-        />
-        </button>
+        onClick={resetListening}
+      />
       {play ? (
         <MicOffIcon
           className="w-12 h-12 text-[#e9f3f4] p-2 rounded-full bg-[#e85e65] shadow-md cursor-pointer"
@@ -153,9 +148,6 @@ const Speech = forwardRef((props: SpeechProps, ref: ForwardedRef<unknown>) => {
             </SelectItem>
             <SelectItem className="text-[#e85e65]" value="hi-IN">
               Hindi
-            </SelectItem>
-            <SelectItem className="text-[#e85e65]" value="jp-JP">
-              Japanese
             </SelectItem>
           </SelectGroup>
         </SelectContent>
